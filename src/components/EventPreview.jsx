@@ -1,4 +1,5 @@
-export const EventDetail = ({ event, categories }) => {
+// src/components/EventPreview.jsx
+export const EventPreview = ({ event, categories }) => {
   if (!event || !event.categoryIds) return null;
 
   const categoryNames = categories
@@ -9,12 +10,11 @@ export const EventDetail = ({ event, categories }) => {
   return (
     <>
       <h2>{event.title}</h2>
-      <p>{event.description}</p>
       <img src={event.image} alt={event.title} />
       <p>
-        {event.startTime} - {event.endTime}
+        {event.startTime} – {event.endTime}
       </p>
-      <p>{categoryNames}</p>
+      <p>Categorieën: {categoryNames}</p>
     </>
   );
 };

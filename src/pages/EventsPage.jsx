@@ -1,7 +1,7 @@
 import { Heading, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { EventDetail } from "../components/EventDetail";
+import { EventPreview } from "../components/EventPreview";
 import { SearchBar } from "../components/SearchBar";
 import { FilterByCategory } from "../components/FilterByCategory";
 
@@ -82,7 +82,7 @@ export const EventsPage = () => {
           {filteredEvents.map((event) => (
             <li key={event.id}>
               <Link to={`/event/${event.id}`}>
-                <EventDetail event={event} categories={categories} />
+                <EventPreview event={event} categories={categories} />
               </Link>
             </li>
           ))}
