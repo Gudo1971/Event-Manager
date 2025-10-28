@@ -1,0 +1,6 @@
+const DeleteEventModal =()=>{
+    
+    return(
+
+    );
+};
