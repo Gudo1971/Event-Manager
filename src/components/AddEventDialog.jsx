@@ -1,8 +1,15 @@
 import {
-  Dialog,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
   Button,
   Input,
-  Field,
+  FormControl,
+  FormLabel,
   Box,
   Image,
   Text,
@@ -62,62 +69,58 @@ export const AddEventDialog = ({ open, onOpenChange }) => {
   };
 
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Backdrop />
-      <Dialog.Positioner placement="center">
-        <Dialog.Content>
-          <Dialog.CloseTrigger />
-          <Dialog.Header>
-            <Dialog.Title>Add Event</Dialog.Title>
-          </Dialog.Header>
-          <Dialog.Body>
-            <Field.Root>
-              <Field.Label>Title</Field.Label>
-              <Input ref={titleRef} placeholder="Title" />
-            </Field.Root>
+    <Modal isOpen={open} onClose={() => onOpenChange(false)} isCentered>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Add Event</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <FormControl mb={4}>
+            <FormLabel>Title</FormLabel>
+            <Input ref={titleRef} placeholder="Title" />
+          </FormControl>
 
-            <Field.Root mt={4}>
-              <Field.Label>Start Time</Field.Label>
-              <Input ref={startTimeRef} placeholder="Start Time" />
-            </Field.Root>
+          <FormControl mb={4}>
+            <FormLabel>Start Time</FormLabel>
+            <Input ref={startTimeRef} placeholder="Start Time" />
+          </FormControl>
 
-            <Field.Root mt={4}>
-              <Field.Label>Image URL</Field.Label>
-              <Input
-                ref={imageUrlRef}
-                placeholder="Image URL"
-                onBlur={handleImageChange}
+          <FormControl mb={4}>
+            <FormLabel>Image URL</FormLabel>
+            <Input
+              ref={imageUrlRef}
+              placeholder="Image URL"
+              onBlur={handleImageChange}
+            />
+          </FormControl>
+
+          {previewUrl && (
+            <Box mt={4}>
+              <Text fontSize="sm" mb={2}>
+                Image Preview:
+              </Text>
+              <Image
+                src={previewUrl}
+                alt="Event preview"
+                borderRadius="md"
+                maxH="200px"
+                objectFit="cover"
               />
-            </Field.Root>
+            </Box>
+          )}
 
-            {previewUrl && (
-              <Box mt={4}>
-                <Text fontSize="sm" mb={2}>
-                  Image Preview:
-                </Text>
-                <Image
-                  src={previewUrl}
-                  alt="Event preview"
-                  borderRadius="md"
-                  maxH="200px"
-                  objectFit="cover"
-                />
-              </Box>
-            )}
-
-            <Field.Root mt={4}>
-              <Field.Label>Category</Field.Label>
-              <Input ref={categoryRef} placeholder="Category" />
-            </Field.Root>
-          </Dialog.Body>
-          <Dialog.Footer>
-            <Button colorScheme="blue" mr={3} onClick={handleSave}>
-              Save
-            </Button>
-            <Button onClick={() => onOpenChange(false)}>Cancel</Button>
-          </Dialog.Footer>
-        </Dialog.Content>
-      </Dialog.Positioner>
-    </Dialog.Root>
+          <FormControl mt={4}>
+            <FormLabel>Category</FormLabel>
+            <Input ref={categoryRef} placeholder="Category" />
+          </FormControl>
+        </ModalBody>
+        <ModalFooter>
+          <Button colorScheme="blue" mr={3} onClick={handleSave}>
+            Save
+          </Button>
+          <Button onClick={() => onOpenChange(false)}>Cancel</Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
