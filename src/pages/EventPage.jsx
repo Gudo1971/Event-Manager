@@ -21,6 +21,7 @@ export const EventPage = () => {
     onOpen: onDeleteOpen,
     onClose: onDeleteClose,
   } = useDisclosure();
+
   useEffect(() => {
     fetch(`http://localhost:3000/events/${eventId}`)
       .then((res) => res.json())
@@ -64,7 +65,6 @@ export const EventPage = () => {
           Edit Event
         </Button>
 
-        <EventDetail event={event} categories={categories} />
         <Button mt={4} colorScheme="blue" onClick={onDeleteOpen}>
           Delete Event
         </Button>
