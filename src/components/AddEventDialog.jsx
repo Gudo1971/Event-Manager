@@ -18,15 +18,23 @@ import { useRef, useState } from "react";
 
 export const AddEventDialog = ({ open, onOpenChange }) => {
   const titleRef = useRef(null);
-  const startTimeRef = useRef(null);
+  const descriptionRef = useRef(null);
+  const dateRef = useRef(null);
   const imageUrlRef = useRef(null);
-  const categoryRef = useRef(null);
   const [previewUrl, setPreviewUrl] = useState("");
+  const startTimeRef = useRef(null);
+  const endTimeRef = useRef(null);
+  const locationRef = useRef(null);
+  const categoryRef = useRef(null);
 
   const handleSave = async () => {
     if (
       !titleRef.current ||
+      !descriptionRef.current ||
+      !locationRef.current ||
+      !dateRef.current ||
       !startTimeRef.current ||
+      !endTimeRef.current ||
       !imageUrlRef.current ||
       !categoryRef.current
     ) {
@@ -36,9 +44,14 @@ export const AddEventDialog = ({ open, onOpenChange }) => {
 
     const eventData = {
       title: titleRef.current.value,
+      description: descriptionRef.current.value,
+      location: locationRef.current.value,
+      date: dateRef.current.value,
       startTime: startTimeRef.current.value,
+      endTime: endTimeRef.current.value,
       imageUrl: imageUrlRef.current.value,
       category: categoryRef.current.value,
+      categoryIds: [categoryRef.current.value],
     };
 
     console.log("📦 Uploading eventData:", eventData);
@@ -81,8 +94,28 @@ export const AddEventDialog = ({ open, onOpenChange }) => {
           </FormControl>
 
           <FormControl mb={4}>
+            <FormLabel>Description</FormLabel>
+            <Input ref={descriptionRef} placeholder="Description" />
+          </FormControl>
+
+          <FormControl mb={4}>
+            <FormLabel>Location</FormLabel>
+            <Input ref={locationRef} placeholder="Location" />
+          </FormControl>
+
+          <FormControl mb={4}>
+            <FormLabel>Date</FormLabel>
+            <Input ref={dateRef} type="date" />
+          </FormControl>
+
+          <FormControl mb={4}>
             <FormLabel>Start Time</FormLabel>
-            <Input ref={startTimeRef} placeholder="Start Time" />
+            <Input ref={startTimeRef} type="time" />
+          </FormControl>
+
+          <FormControl mb={4}>
+            <FormLabel>End Time</FormLabel>
+            <Input ref={endTimeRef} type="time" />
           </FormControl>
 
           <FormControl mb={4}>
