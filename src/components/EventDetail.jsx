@@ -1,10 +1,12 @@
 export const EventDetail = ({ event, categories }) => {
-  if (!event || !event.categoryIds) return null;
+  if (!event) return null;
 
-  const categoryNames = categories
-    .filter((cat) => event.categoryIds.includes(cat.id))
-    .map((cat) => cat.name)
-    .join(", ");
+  const categoryNames = Array.isArray(event.categoryIds)
+    ? categories
+        .filter((cat) => event.categoryIds.includes(cat.id))
+        .map((cat) => cat.name)
+        .join(", ")
+    : "Geen categorie";
 
   return (
     <>
