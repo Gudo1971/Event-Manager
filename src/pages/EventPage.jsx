@@ -42,15 +42,12 @@ export const EventPage = () => {
         method: "DELETE",
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to delete event");
-      }
+      if (!response.ok) throw new Error("Failed to delete event");
 
-      // Optioneel: redirect of feedback
-      console.log("Event deleted");
-      onDeleteClose();
-    } catch (error) {
-      console.error("Delete error:", error);
+      console.log("✅ Event deleted");
+      onDeleteClose(); // sluit modal
+    } catch (err) {
+      console.error("❌ Delete error:", err);
     }
   };
   if (!event || categories.length === 0) return null;
