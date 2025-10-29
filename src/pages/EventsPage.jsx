@@ -29,28 +29,29 @@ export const EventsPage = () => {
       });
   }, []);
 
-  const filteredEvents = events.filter((ev) => {
-    const title = ev.title?.toLowerCase() || "";
-    const term = searchTerm.toLowerCase();
+  const filteredEvents =
+    searchTerm === "" && selectedCategories.length === 0
+      ? events
+      : events.filter((ev) => {
+          const title = ev.title?.toLowerCase() || "";
+          const term = searchTerm.toLowerCase();
 
-    const matchesSearch = title.includes(term);
+          const matchesSearch = title.includes(term);
 
-    const matchesCategory =
-      selectedCategories.length === 0 ||
-      (Array.isArray(ev.categoryIds) &&
-        ev.categoryIds.some((id) => selectedCategories.includes(String(id))));
-
-    return matchesSearch && matchesCategory;
-  });
-
-  console.log("✅ selectedCategories:", selectedCategories);
-  console.log("✅ searchTerm:", searchTerm);
-  console.log("✅ filteredEvents:", filteredEvents);
-  console.log(
-    "✅ event.categoryIds:",
-    events.map((e) => e.categoryIds)
-  );
-
+          const matchesCategory =
+            selectedCategories.length === 0 ||
+            (Array.isArray(ev.categoryIds)
+              ? ev.categoryIds.some((id) =>
+                  selectedCategories.includes(String(id))
+                )
+              : true); // fallback als categoryIds ontbreekt
+          console.log("✅ filteredEvents:", filteredEvents);
+          console.log("✅ events:", events);
+          console.log("✅ selectedCategories:", selectedCategories);
+          console.log("✅ searchTerm:", searchTerm);
+          return matchesSearch && matchesCategory;
+        });
+  console.log("🧪 events:", events);
   return (
     <>
       <SearchBar

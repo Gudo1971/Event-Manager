@@ -39,6 +39,7 @@ export const AddEventDialog = ({ open, onOpenChange }) => {
       startTime: startTimeRef.current.value,
       imageUrl: imageUrlRef.current.value,
       category: categoryRef.current.value,
+      categoryIds: [categoryRef.current.value],
     };
 
     console.log("📦 Uploading eventData:", eventData);
