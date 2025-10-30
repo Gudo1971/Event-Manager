@@ -18,6 +18,12 @@ export const EventsProvider = ({ children }) => {
     setCategories(data);
   };
 
+  const refetchEvents = async () => {
+    const res = await fetch("http://localhost:3000/events");
+    const data = await res.json();
+    setEvents(data); // ✅ triggert re-render
+  };
+
   useEffect(() => {
     fetchEvents();
     fetchCategories();
@@ -28,8 +34,8 @@ export const EventsProvider = ({ children }) => {
       value={{
         events,
         categories,
-        refetchEvents: fetchEvents,
-        refetchCategories: fetchCategories, // ✅ expose refetch
+        refetchEvents, // ✅ juiste functie
+        refetchCategories: fetchCategories, // ✅ pulldown blijft werken
       }}
     >
       {children}

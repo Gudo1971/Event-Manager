@@ -9,8 +9,9 @@
         2
       ],
       "location": "My back yard",
-      "startTime": "2023-03-10T18:00",
-      "endTime": "2023-03-10T17:00:00.000Z"
+      "date": "2023-03-01",
+      "startTime": "18:00",
+      "endTime": "00:00"
     },
     {
       "id": 2,
@@ -21,8 +22,9 @@
         2
       ],
       "location": "Blinded by the Lights Laser Tag, 15 Main St.",
-      "startTime": "2023-04-06T18:46",
-      "endTime": "2023-04-06T17:46"
+      "date": "2023-04-06",
+      "startTime": "18:46",
+      "endTime": "17:46"
     },
     {
       "id": 3,
@@ -34,20 +36,9 @@
         2
       ],
       "location": "The Park",
-      "startTime": "2023-03-15T12:00:00.000Z",
-      "endTime": "2023-03-15T13:30:00.000Z"
-    },
-    {
-      "id": 4,
-      "title": "Yoga",
-      "description": "It's a bit of a stretch.",
-      "image": "https://wincacademy.github.io/webpages/media/pexels-gabby-k-5384538.jpg",
-      "categoryIds": [
-        3
-      ],
-      "location": "Shavasana Yoga School",
-      "startTime": "2023-03-09T06:00:00.000Z",
-      "endTime": "2023-03-09T07:00:00.000Z"
+      "date": "2023-03-15",
+      "startTime": "12:00",
+      "endTime": "13:30"
     },
     {
       "id": 5,
@@ -58,8 +49,9 @@
         1
       ],
       "location": "Grand Slam Tennis Court",
-      "startTime": "2023-03-09T08:00:00.000Z",
-      "endTime": "2023-03-09T10:00:00.000Z"
+      "date": "2023-03-09",
+      "startTime": "08:00",
+      "endTime": "10:00"
     },
     {
       "id": 6,
@@ -69,9 +61,10 @@
       "categoryIds": [
         2
       ],
+      "date": "2023-03-13",
       "location": "Community Hall",
-      "startTime": "2023-03-13T18:00:00.000Z",
-      "endTime": "2023-03-13T21:00:00.000Z"
+      "startTime": "18:00",
+      "endTime": "21:00"
     },
     {
       "id": 7,
@@ -82,8 +75,9 @@
         3
       ],
       "location": "Cozy Tea House",
-      "startTime": "2023-03-17T15:00:00.000Z",
-      "endTime": "2023-03-17T17:00:00.000Z"
+      "date": "2023-03-17",
+      "startTime": "15:00",
+      "endTime": "17:00"
     },
     {
       "id": 8,
@@ -94,8 +88,9 @@
         3
       ],
       "location": "Forest Trailhead",
-      "startTime": "2023-03-16T07:00:00.000Z",
-      "endTime": "2023-03-16T09:30:00.000Z"
+      "date": "2023-03-16",
+      "startTime": "07:00",
+      "endTime": "09:30"
     },
     {
       "id": 9,
@@ -106,116 +101,113 @@
         2
       ],
       "location": "Downtown Bowling Alley",
-      "startTime": "2023-03-19T18:00:00.000Z",
-      "endTime": "2023-03-19T21:00:00.000Z"
+      "date": "2023-03-19",
+      "startTime": "18:00",
+      "endTime": "21:00"
     },
     {
-      "title": "",
-      "startTime": "",
-      "imageUrl": "",
-      "category": "",
-      "id": 1761722293862
-    },
-    {
-      "title": "s\\z",
-      "startTime": "",
-      "imageUrl": "\\zdfvb",
-      "category": "z\\b",
+      "title": "ddd",
+      "location": "ddd",
+      "date": "2025-10-31",
+      "startTime": "11:11",
+      "endTime": "11:11",
+      "imageUrl": "1111",
+      "description": "1111",
       "categoryIds": [
-        "z\\b"
+        17
       ],
-      "id": 1761722293870
+      "id": 10
     },
     {
-      "title": "geg",
-      "description": "dsba\\",
-      "location": "adbfd",
-      "date": "",
-      "startTime": "",
-      "endTime": "",
-      "imageUrl": "",
-      "category": "1",
-      "categoryIds": [
-        "1"
-      ],
-      "id": 1761722293871
-    },
-    {
-      "title": "",
-      "location": "",
-      "date": "",
-      "startTime": "",
-      "endTime": "",
-      "imageUrl": "cvb v",
-      "description": "",
+      "title": "3ewr",
+      "location": "3rewr",
+      "date": "2025-10-31",
+      "startTime": "11:11",
+      "endTime": "11:11",
+      "imageUrl": "1111",
+      "description": "111",
       "categoryIds": [
         4
       ],
-      "id": 1761722293872
+      "id": 11
     },
     {
-      "title": "",
-      "location": "",
-      "date": "",
-      "startTime": "",
-      "endTime": "",
-      "imageUrl": "",
-      "description": "",
+      "title": "333",
+      "location": "333",
+      "date": "2025-10-30",
+      "startTime": "03:03",
+      "endTime": "22:22",
+      "imageUrl": "2222",
+      "description": "2222",
       "categoryIds": [
-        0
+        19
       ],
-      "id": 1761722293874
+      "id": 12
     },
     {
-      "title": "yfuurf",
-      "location": "rfyurfuy",
-      "startTime": "",
-      "endTime": "fbdzbz",
-      "imageUrl": "",
-      "description": "rfuykrfykrfyk,lyfryfuk",
-      "categoryIds": [
-        1
-      ],
-      "id": 1761722293875
-    },
-    {
-      "title": "sfghfnfggjndfhdfh",
-      "location": "dfzfhgaz",
-      "date": "2025-09-30",
-      "startTime": "",
-      "endTime": "",
-      "imageUrl": "",
-      "description": "dfbgdhbdhbfdhfbd",
+      "title": "4",
+      "location": "4",
+      "date": "2025-10-31",
+      "startTime": "04:04",
+      "endTime": "04:04",
+      "imageUrl": "444",
+      "description": "44",
       "categoryIds": [
         15
       ],
-      "id": 1761722293876
+      "id": 13
     },
     {
-      "title": "lgl;ui;",
-      "location": ";hgb;o/ghb/;",
-      "date": "",
-      "startTime": "",
-      "endTime": "",
-      "imageUrl": "/ghbgbh/",
-      "description": "gbh/gbh/gbh/gbh/gb/",
+      "title": "uuuu",
+      "location": "hhhh",
+      "date": "2025-10-31",
+      "startTime": "04:44",
+      "endTime": "04:04",
+      "imageUrl": "444",
+      "description": "444",
+      "categoryIds": [
+        21
+      ],
+      "id": 14
+    },
+    {
+      "title": "111",
+      "location": "111",
+      "date": "2025-10-31",
+      "startTime": "11:01",
+      "endTime": "11:11",
+      "imageUrl": "1111111",
+      "description": "111111111111111111",
+      "categoryIds": [
+        19
+      ],
+      "id": 15
+    },
+    {
+      "title": "66666",
+      "location": "66666",
+      "date": "2025-10-31",
+      "startTime": "05:55",
+      "endTime": "05:55",
+      "imageUrl": "5555",
+      "description": "555",
       "categoryIds": [
         20
       ],
-      "id": 1761722293877
+      "id": 16
     },
     {
-      "title": "fdhsfdh",
-      "location": "dfhf",
-      "date": "2025-11-26",
-      "startTime": "14:00",
-      "endTime": "00:00",
-      "imageUrl": "vbm",
-      "description": "3",
+      "title": "77",
+      "location": "66",
+      "date": "2025-10-31",
+      "startTime": "06:59",
+      "endTime": "06:59",
+      "imageUrl": "666",
+      "description": "999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
       "categoryIds": [
-        20
+        22
       ],
-      "id": 1761722293878
+      "id": 17
     }
   ],
   "categories": [

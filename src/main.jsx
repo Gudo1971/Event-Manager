@@ -8,7 +8,7 @@ import { EventsPage } from "./pages/EventsPage";
 import { EventPage } from "./pages/EventPage";
 import { EventsProvider } from "./context/EventsContext"; // ✅ importeer context
 import "react-datepicker/dist/react-datepicker.css";
-
+import { AboutUs } from "./pages/AboutUs";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -16,6 +16,8 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <EventsPage /> },
       { path: "/event/:eventId", element: <EventPage /> },
+      { path: "/events", element: <EventsPage /> },
+      { path: "/AboutUs", element: <AboutUs /> },
     ],
   },
 ]);

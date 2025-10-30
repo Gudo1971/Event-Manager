@@ -1,46 +1,31 @@
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverHeader,
-  PopoverBody,
-  Button,
-  Checkbox,
-  VStack,
-  Box,
-} from "@chakra-ui/react";
+import { Checkbox, VStack } from "@chakra-ui/react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
-export const FilterByCategory = ({ categories, selected, onChange }) => {
-  const handleToggle = (id) => {
-    const newSelection = selected.includes(id)
-      ? selected.filter((v) => v !== id)
-      : [...selected, id];
-    onChange(newSelection);
+export const FilterByCategory = ({ categories }) => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const activeCategoryId = parseInt(searchParams.get("category"));
+
+  const handleChange = (catId) => {
+    // Toggle: als al actief, reset naar alle events
+    if (activeCategoryId === catId) {
+      navigate("/events");
+    } else {
+      navigate(`/events?category=${catId}`);
+    }
   };
 
   return (
-    <Box mt={4}>
-      <Popover>
-        <PopoverTrigger>
-          <Button>Filter by Category</Button>
-        </PopoverTrigger>
-        <PopoverContent maxH="300px" overflowY="auto">
-          <PopoverHeader fontWeight="bold">Select Categories</PopoverHeader>
-          <PopoverBody>
-            <VStack align="start">
-              {categories.map((cat) => (
-                <Checkbox
-                  key={cat.id}
-                  isChecked={selected.includes(String(cat.id))}
-                  onChange={() => handleToggle(String(cat.id))}
-                >
-                  {cat.name}
-                </Checkbox>
-              ))}
-            </VStack>
-          </PopoverBody>
-        </PopoverContent>
-      </Popover>
-    </Box>
+    <VStack align="start" spacing={2} mb={6}>
+      {categories.map((cat) => (
+        <Checkbox
+          key={cat.id}
+          isChecked={activeCategoryId === cat.id}
+          onChange={() => handleChange(cat.id)}
+        >
+          {cat.name}
+        </Checkbox>
+      ))}
+    </VStack>
   );
 };

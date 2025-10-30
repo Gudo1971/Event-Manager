@@ -1,88 +1,54 @@
-import { Heading, VStack, Button, HStack, Text } from "@chakra-ui/react";
-import { useState, useMemo } from "react";
-import { Link, useOutletContext } from "react-router-dom";
+import {
+  Box,
+  Heading,
+  SimpleGrid,
+  Text,
+  VStack,
+  Skeleton,
+} from "@chakra-ui/react";
+import { useSearchParams } from "react-router-dom";
 import { useEvents } from "../context/EventsContext";
 import { EventPreview } from "../components/EventPreview";
-import { SearchBar } from "../components/SearchBar";
-import { FilterByCategory } from "../components/FilterByCategory";
-import { AddEventDialog } from "../components/AddEventDialog";
 
 export const EventsPage = () => {
   const { events, categories } = useEvents();
-  const { isAddEventOpen, onAddEventChange } = useOutletContext();
+  const [searchParams] = useSearchParams();
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const categoryId = parseInt(searchParams.get("category"));
+  const filteredEvents = !isNaN(categoryId)
+    ? events.filter((event) => event.categoryIds?.includes(categoryId))
+    : events;
 
-  // 🛡️ Filter foute events weg
-  const validEvents = Array.isArray(events)
-    ? events.filter(
-        (ev) =>
-          typeof ev.title === "string" &&
-          ev.title.trim() !== "" &&
-          Array.isArray(ev.categoryIds) &&
-          ev.categoryIds.every((id) => typeof id === "number")
-      )
-    : [];
-
-  const filteredEvents = useMemo(() => {
-    if (searchTerm === "" && selectedCategories.length === 0)
-      return validEvents;
-
-    return validEvents.filter((ev) => {
-      const title = ev.title?.toLowerCase() || "";
-      const term = searchTerm.toLowerCase();
-      const matchesSearch = title.includes(term);
-      const matchesCategory =
-        selectedCategories.length === 0 ||
-        ev.categoryIds.some((id) => selectedCategories.includes(String(id)));
-      return matchesSearch && matchesCategory;
-    });
-  }, [validEvents, searchTerm, selectedCategories]);
-
-  const handleResetFilters = () => {
-    setSearchTerm("");
-    setSelectedCategories([]);
-  };
+  const isLoading = !Array.isArray(events) || events.length === 0;
 
   return (
-    <>
-      <AddEventDialog isOpen={isAddEventOpen} onOpenChange={onAddEventChange} />
+    <Box maxW="6xl" mx="auto" py={8}>
+      <Heading mb={6}>All Events</Heading>
 
-      <SearchBar
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search for an Event"
-      />
-
-      <HStack mt={4} spacing={4}>
-        <FilterByCategory
-          categories={categories}
-          selected={selectedCategories}
-          onChange={(value) => {
-            if (Array.isArray(value)) setSelectedCategories(value);
-          }}
-        />
-        <Button onClick={handleResetFilters} colorScheme="gray">
-          Reset Filters
-        </Button>
-      </HStack>
-
-      <Heading mt={6}>List of events</Heading>
-
-      {filteredEvents.length === 0 ? (
-        <Text mt={4}>No events match your current filters.</Text>
-      ) : (
-        <VStack as="ul" spacing={4} mt={4} align="stretch">
-          {filteredEvents.map((event) => (
-            <li key={event.id}>
-              <Link to={`/event/${event.id}`}>
-                <EventPreview event={event} categories={categories} />
-              </Link>
-            </li>
+      {isLoading ? (
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <VStack key={i} spacing={4} align="stretch">
+              <Skeleton height="200px" borderRadius="md" />
+              <Skeleton height="24px" />
+              <Skeleton height="16px" />
+              <Skeleton height="40px" />
+            </VStack>
           ))}
-        </VStack>
+        </SimpleGrid>
+      ) : filteredEvents.length === 0 ? (
+        <Text>No events found.</Text>
+      ) : (
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+          {filteredEvents.map((event) => (
+            <EventPreview
+              key={event.id}
+              event={event}
+              categories={categories}
+            />
+          ))}
+        </SimpleGrid>
       )}
-    </>
+    </Box>
   );
 };

@@ -13,6 +13,7 @@ import {
   Select,
   HStack,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useEvents } from "../context/EventsContext";
@@ -26,6 +27,8 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
     onOpen: onCatOpen,
     onClose: onCatClose,
   } = useDisclosure();
+
+  const toast = useToast();
 
   const [title, setTitle] = useState("");
   const [location, setLocation] = useState("");
@@ -69,21 +72,45 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
       !description.trim() ||
       !categoryId
     ) {
-      alert("Please fill in all required fields.");
+      toast({
+        title: "Missing fields",
+        description: "Please fill in all required fields.",
+        status: "error",
+        variant: "solid",
+        position: "top-right",
+        duration: 4000,
+        isClosable: true,
+      });
       return;
     }
 
     const selectedDate = new Date(date);
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // strip time
+    today.setHours(0, 0, 0, 0);
 
     if (isNaN(selectedDate.getTime())) {
-      alert("Please select a valid date.");
+      toast({
+        title: "Invalid date",
+        description: "Please select a valid date.",
+        status: "error",
+        variant: "solid",
+        position: "top-right",
+        duration: 4000,
+        isClosable: true,
+      });
       return;
     }
 
     if (selectedDate < today) {
-      alert("Date must be in the future.");
+      toast({
+        title: "Date too early",
+        description: "Date must be in the future.",
+        status: "error",
+        variant: "solid",
+        position: "top-right",
+        duration: 4000,
+        isClosable: true,
+      });
       return;
     }
 
@@ -110,11 +137,28 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
         throw new Error(`Server error: ${res.status} – ${errorText}`);
       }
 
-      refetchEvents(); // ✅ herlaad lijst
-      onOpenChange(false); // ✅ sluit modal
+      toast({
+        title: "Event created",
+        description: `"${newEvent.title}" has been added.`,
+        status: "success",
+        variant: "solid",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      onOpenChange(false);
+      refetchEvents();
     } catch (err) {
-      console.error("❌ Failed to create event:", err);
-      alert("Failed to create event. See console for details.");
+      toast({
+        title: "Creation failed",
+        description: err.message || "Could not create the event.",
+        status: "error",
+        variant: "solid",
+        position: "top-right",
+        duration: 4000,
+        isClosable: true,
+      });
     }
   };
 
@@ -124,7 +168,7 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
 
     const lowerName = name.toLowerCase();
 
-    const exactMatch = categories.find(
+    const exactMatch = categories?.find(
       (cat) => cat.name.toLowerCase() === lowerName
     );
 
@@ -133,7 +177,7 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
       return;
     }
 
-    const fuzzyMatch = categories.find((cat) => {
+    const fuzzyMatch = categories?.find((cat) => {
       const existing = cat.name.toLowerCase();
       return (
         existing.includes(lowerName) ||
@@ -148,18 +192,40 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
       return;
     }
 
-    await fetch("http://localhost:3000/categories", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name }),
-    });
+    try {
+      const res = await fetch("http://localhost:3000/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
 
-    setNewCategoryName("");
-    setCategoryError("");
-    refetchCategories();
-    onCatClose();
+      if (!res.ok) throw new Error("Failed to create category");
+
+      toast({
+        title: "Category created",
+        description: `"${name}" has been added.`,
+        status: "success",
+        variant: "solid",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      resetCategoryForm();
+      refetchCategories();
+      onCatClose();
+    } catch (err) {
+      toast({
+        title: "Category creation failed",
+        description: err.message || "Could not create the category.",
+        status: "error",
+        variant: "solid",
+        position: "top-right",
+        duration: 4000,
+        isClosable: true,
+      });
+    }
   };
-
   return (
     <>
       <Modal isOpen={isOpen} onClose={() => onOpenChange(false)}>
@@ -228,11 +294,12 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
                 >
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
+                  {Array.isArray(categories) &&
+                    categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
                 </Select>
                 <Button onClick={onCatOpen}>+ Add</Button>
               </HStack>
