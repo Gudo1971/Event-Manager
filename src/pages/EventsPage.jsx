@@ -9,7 +9,7 @@ import {
 import { useSearchParams } from "react-router-dom";
 import { useEvents } from "../context/EventsContext";
 import { EventPreview } from "../components/EventPreview";
-
+import { Header } from "../components/Header";
 export const EventsPage = () => {
   const { events, categories } = useEvents();
   const [searchParams] = useSearchParams();
@@ -23,6 +23,7 @@ export const EventsPage = () => {
 
   return (
     <Box maxW="6xl" mx="auto" py={8}>
+      <Header />
       <Heading mb={6}>All Events</Heading>
 
       {isLoading ? (

@@ -19,6 +19,7 @@ import { useState, useEffect } from "react";
 import { useEvents } from "../context/EventsContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useNavigate } from "react-router-dom";
 
 export const EditEventModal = ({ isOpen, onClose, event }) => {
   const { refetchEvents, refetchCategories, categories } = useEvents();
@@ -39,6 +40,8 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
   const [categoryId, setCategoryId] = useState("");
   const [newCategoryName, setNewCategoryName] = useState("");
   const [categoryError, setCategoryError] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (event) {
@@ -78,6 +81,7 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
         duration: 4000,
         isClosable: true,
       });
+
       return;
     }
 
@@ -146,6 +150,7 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
 
       await refetchEvents();
       onClose();
+      navigate("/");
     } catch (err) {
       toast({
         title: "Update failed",
