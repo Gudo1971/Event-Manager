@@ -14,9 +14,10 @@ import {
   HStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useEvents } from "../context/EventsContext";
 import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export const AddEventDialog = ({ isOpen, onOpenChange }) => {
   const { refetchEvents, refetchCategories, categories } = useEvents();
@@ -35,9 +36,11 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
   const [description, setDescription] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [categoryError, setCategoryError] = useState("");
 
   const resetCategoryForm = () => {
     setNewCategoryName("");
+    setCategoryError("");
   };
 
   const resetForm = () => {
@@ -48,8 +51,12 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
     setImageUrl("");
     setDescription("");
     setCategoryId("");
-    setDate(""); // als je een apart date-veld hebt
+    setDate("");
   };
+
+  useEffect(() => {
+    if (!isOpen) resetForm();
+  }, [isOpen]);
 
   const handleSubmit = async () => {
     const newEvent = {
@@ -74,15 +81,44 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
   };
 
   const handleAddCategory = async () => {
+    const name = newCategoryName.trim();
+    if (!name) return;
+
+    const lowerName = name.toLowerCase();
+
+    const exactMatch = categories.find(
+      (cat) => cat.name.toLowerCase() === lowerName
+    );
+
+    if (exactMatch) {
+      setCategoryError(`Category "${name}" already exists.`);
+      return;
+    }
+
+    const fuzzyMatch = categories.find((cat) => {
+      const existing = cat.name.toLowerCase();
+      return (
+        existing.includes(lowerName) ||
+        lowerName.includes(existing) ||
+        existing.startsWith(lowerName) ||
+        lowerName.startsWith(existing)
+      );
+    });
+
+    if (fuzzyMatch) {
+      setCategoryError(`Did you mean "${fuzzyMatch.name}"?`);
+      return;
+    }
+
     await fetch("http://localhost:3000/categories", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newCategoryName }),
+      body: JSON.stringify({ name }),
     });
 
     setNewCategoryName("");
+    setCategoryError("");
     refetchCategories();
-    resetCategoryForm();
     onCatClose();
   };
 
@@ -103,18 +139,18 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
               />
-              <FormControl mb={3}>
-                <FormLabel>Date</FormLabel>
-                <DatePicker
-                  selected={date ? new Date(date) : null}
-                  onChange={(dateObj) =>
-                    setDate(dateObj.toISOString().split("T")[0])
-                  }
-                  dateFormat="yyyy-MM-dd"
-                  placeholderText="Select a date"
-                  customInput={<Input />} // ✅ Chakra-styled input
-                />
-              </FormControl>
+            </FormControl>
+            <FormControl mb={3}>
+              <FormLabel>Date</FormLabel>
+              <DatePicker
+                selected={date ? new Date(date) : null}
+                onChange={(dateObj) =>
+                  setDate(dateObj.toISOString().split("T")[0])
+                }
+                dateFormat="yyyy-MM-dd"
+                placeholderText="Select a date"
+                customInput={<Input />}
+              />
             </FormControl>
             <FormControl mb={3}>
               <FormLabel>Start Time</FormLabel>
@@ -168,20 +204,13 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
             <Button colorScheme="blue" onClick={handleSubmit}>
               Save
             </Button>
-            <Button
-              onClick={() => {
-                onOpenChange(false);
-                resetForm();
-              }}
-              ml={3}
-            >
+            <Button onClick={() => onOpenChange(false)} ml={3}>
               Cancel
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      {/* Modal voor nieuwe categorie */}
       <Modal isOpen={isCatOpen} onClose={onCatClose}>
         <ModalOverlay />
         <ModalContent>
@@ -193,6 +222,11 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
               />
+              {categoryError && (
+                <FormLabel color="red.500" fontSize="sm" mt={2}>
+                  {categoryError}
+                </FormLabel>
+              )}
             </FormControl>
           </ModalBody>
           <ModalFooter>
