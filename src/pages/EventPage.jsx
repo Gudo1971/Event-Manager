@@ -5,10 +5,8 @@ import { EventDetail } from "../components/EventDetail";
 import { useEffect, useState } from "react";
 import { EditEventModal } from "../components/EditEventModal";
 import { DeleteEventModal } from "../components/DeleteEventModal";
-import { useNavigate } from "react-router-dom";
 
 export const EventPage = () => {
-  const navigate = useNavigate();
   const { eventId } = useParams();
   const [event, setEvent] = useState(null);
   const [categories, setCategories] = useState([]);
@@ -37,7 +35,6 @@ export const EventPage = () => {
   const handleSave = (updateEvent) => {
     setEvent(updateEvent);
     onEditClose();
-    navigate("/");
   };
   const handleDelete = async () => {
     try {
