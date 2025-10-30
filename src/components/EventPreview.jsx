@@ -1,61 +1,47 @@
 import {
   Box,
   Heading,
-  Image,
   Text,
-  Stack,
-  useColorModeValue,
+  Image,
+  VStack,
+  Tag,
+  Button,
 } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 
 export const EventPreview = ({ event, categories }) => {
-  if (!event) return null;
+  if (!event || !categories || categories.length === 0) return null;
 
-  const categoryNames = Array.isArray(event.categoryIds)
-    ? categories
-        .filter((cat) => event.categoryIds.includes(cat.id))
-        .map((cat) => cat.name)
-        .join(", ")
-    : "no category";
-
-  const bg = useColorModeValue("white", "gray.700");
-  const border = useColorModeValue("gray.200", "gray.600");
-  const textColor = useColorModeValue("gray.600", "gray.300");
+  const category = categories.find((cat) =>
+    event.categoryIds?.includes(cat.id)
+  );
 
   return (
-    <Box
-      borderWidth="1px"
-      borderRadius="md"
-      overflow="hidden"
-      bg={bg}
-      borderColor={border}
-      boxShadow="sm"
-      _hover={{ boxShadow: "md" }}
-      transition="box-shadow 0.2s"
-    >
-      {event.image && (
+    <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p={4}>
+      <VStack align="start" spacing={3}>
         <Image
           src={event.image}
           alt={event.title}
+          borderRadius="md"
           objectFit="cover"
-          w="100%"
-          h="100%"
+          width="100%"
+          height="100%"
         />
-      )}
 
-      <Box p={4}>
-        <Heading size="md" mb={2}>
-          {event.title}
-        </Heading>
+        <Heading size="md">{event.title}</Heading>
+        <Text>{event.description}</Text>
+        <Text fontSize="sm" color="gray.500">
+          {event.location}
+        </Text>
 
-        <Stack spacing={1}>
-          <Text fontSize="sm" color={textColor}>
-            {event.startTime} – {event.endTime}
-          </Text>
-          <Text fontSize="sm" color={textColor}>
-            Categories: {categoryNames}
-          </Text>
-        </Stack>
-      </Box>
+        {category && <Tag colorScheme="blue">{category.name}</Tag>}
+
+        <Link to={`/event/${event.id}`}>
+          <Button colorScheme="teal" size="sm">
+            View Details
+          </Button>
+        </Link>
+      </VStack>
     </Box>
   );
 };
