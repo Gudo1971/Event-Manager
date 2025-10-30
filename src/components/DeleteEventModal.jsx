@@ -1,41 +1,43 @@
 import {
+  Button,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Button,
+  Text,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useEvents } from "../context/EventsContext";
+
 export const DeleteEventModal = ({ isOpen, onClose, event }) => {
-  const handleDelete = () => {
-    fetch(`http://localhost:3000/events/${event.id}`, {
+  const { refetchEvents } = useEvents();
+
+  const handleDelete = async () => {
+    await fetch(`http://localhost:3000/events/${event.id}`, {
       method: "DELETE",
-    })
-      .then((res) => {
-        if (res.ok) {
-          console.log("✅ Event deleted");
-          navigate("/");
-        } else {
-          console.error("❌ Delete failed");
-        }
-      })
-      .catch((err) => {
-        console.error("❌ Delete error:", err);
-      });
+    });
+
+    refetchEvents(); // ✅ herlaadt lijst
+    onClose(); // sluit modal
   };
-  const navigate = useNavigate();
+
+  if (!event) return null;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Delete Event</ModalHeader>
-        <ModalBody>Are you sure you want to delete this event?</ModalBody>
+        <ModalBody>
+          <Text>Are you sure you want to delete "{event.title}"?</Text>
+        </ModalBody>
         <ModalFooter>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button colorScheme="red" ml={3} onClick={handleDelete}>
+          <Button colorScheme="red" onClick={handleDelete}>
             Delete
+          </Button>
+          <Button onClick={onClose} ml={3}>
+            Cancel
           </Button>
         </ModalFooter>
       </ModalContent>

@@ -1,44 +1,44 @@
-import { Heading, VStack, Button, HStack } from "@chakra-ui/react";
-import { useState, useMemo, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Heading, VStack, Button, HStack, Text } from "@chakra-ui/react";
+import { useState, useMemo } from "react";
+import { Link, useOutletContext } from "react-router-dom";
+import { useEvents } from "../context/EventsContext";
 import { EventPreview } from "../components/EventPreview";
 import { SearchBar } from "../components/SearchBar";
 import { FilterByCategory } from "../components/FilterByCategory";
+import { AddEventDialog } from "../components/AddEventDialog";
 
 export const EventsPage = () => {
-  const [events, setEvents] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const { events, categories } = useEvents();
+  const { isAddEventOpen, onAddEventChange } = useOutletContext();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
 
-  useEffect(() => {
-    fetch("http://localhost:3000/events")
-      .then((res) => res.json())
-      .then((data) => setEvents(data));
-  }, []);
-
-  useEffect(() => {
-    fetch("http://localhost:3000/categories")
-      .then((res) => res.json())
-      .then((data) => setCategories(data));
-  }, []);
+  // 🛡️ Filter foute events weg
+  const validEvents = Array.isArray(events)
+    ? events.filter(
+        (ev) =>
+          typeof ev.title === "string" &&
+          ev.title.trim() !== "" &&
+          Array.isArray(ev.categoryIds) &&
+          ev.categoryIds.every((id) => typeof id === "number")
+      )
+    : [];
 
   const filteredEvents = useMemo(() => {
-    if (!Array.isArray(events)) return [];
-    if (searchTerm === "" && selectedCategories.length === 0) return events;
+    if (searchTerm === "" && selectedCategories.length === 0)
+      return validEvents;
 
-    return events.filter((ev) => {
+    return validEvents.filter((ev) => {
       const title = ev.title?.toLowerCase() || "";
       const term = searchTerm.toLowerCase();
       const matchesSearch = title.includes(term);
       const matchesCategory =
         selectedCategories.length === 0 ||
-        (Array.isArray(ev.categoryIds)
-          ? ev.categoryIds.some((id) => selectedCategories.includes(String(id)))
-          : true);
+        ev.categoryIds.some((id) => selectedCategories.includes(String(id)));
       return matchesSearch && matchesCategory;
     });
-  }, [events, searchTerm, selectedCategories]);
+  }, [validEvents, searchTerm, selectedCategories]);
 
   const handleResetFilters = () => {
     setSearchTerm("");
@@ -47,11 +47,14 @@ export const EventsPage = () => {
 
   return (
     <>
+      <AddEventDialog isOpen={isAddEventOpen} onOpenChange={onAddEventChange} />
+
       <SearchBar
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search for an Event"
       />
+
       <HStack mt={4} spacing={4}>
         <FilterByCategory
           categories={categories}
@@ -64,11 +67,11 @@ export const EventsPage = () => {
           Reset Filters
         </Button>
       </HStack>
-      <Heading mt={4}>List of events</Heading>
+
+      <Heading mt={6}>List of events</Heading>
+
       {filteredEvents.length === 0 ? (
-        <Heading size="md" mt={4}>
-          No events match your current filters.
-        </Heading>
+        <Text mt={4}>No events match your current filters.</Text>
       ) : (
         <VStack as="ul" spacing={4} mt={4} align="stretch">
           {filteredEvents.map((event) => (

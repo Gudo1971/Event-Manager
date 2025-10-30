@@ -5,155 +5,212 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  ModalCloseButton,
   Button,
   Input,
   FormControl,
   FormLabel,
-  Box,
-  Image,
-  Text,
+  Textarea,
+  Select,
+  HStack,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { useState } from "react";
+import { useEvents } from "../context/EventsContext";
+import DatePicker from "react-datepicker";
 
-export const AddEventDialog = ({ open, onOpenChange }) => {
-  const titleRef = useRef(null);
-  const descriptionRef = useRef(null);
-  const dateRef = useRef(null);
-  const imageUrlRef = useRef(null);
-  const [previewUrl, setPreviewUrl] = useState("");
-  const startTimeRef = useRef(null);
-  const endTimeRef = useRef(null);
-  const locationRef = useRef(null);
-  const categoryRef = useRef(null);
+export const AddEventDialog = ({ isOpen, onOpenChange }) => {
+  const { refetchEvents, refetchCategories, categories } = useEvents();
+  const {
+    isOpen: isCatOpen,
+    onOpen: onCatOpen,
+    onClose: onCatClose,
+  } = useDisclosure();
 
-  const handleSave = async () => {
-    if (
-      !titleRef.current ||
-      !descriptionRef.current ||
-      !locationRef.current ||
-      !dateRef.current ||
-      !startTimeRef.current ||
-      !endTimeRef.current ||
-      !imageUrlRef.current ||
-      !categoryRef.current
-    ) {
-      console.error("❌ One or more refs are not mounted");
-      return;
-    }
+  const [title, setTitle] = useState("");
+  const [location, setLocation] = useState("");
+  const [date, setDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [description, setDescription] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [newCategoryName, setNewCategoryName] = useState("");
 
-    const eventData = {
-      title: titleRef.current.value,
-      description: descriptionRef.current.value,
-      location: locationRef.current.value,
-      date: dateRef.current.value,
-      startTime: startTimeRef.current.value,
-      endTime: endTimeRef.current.value,
-      imageUrl: imageUrlRef.current.value,
-      category: categoryRef.current.value,
-      categoryIds: [categoryRef.current.value],
-    };
-
-    console.log("📦 Uploading eventData:", eventData);
-
-    try {
-      const response = await fetch("http://localhost:3000/events", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(eventData),
-      });
-
-      console.log("📬 Response status:", response.status);
-
-      if (!response.ok) throw new Error("Upload failed");
-
-      console.log("✅ Event uploaded");
-      onOpenChange(false);
-    } catch (err) {
-      console.error("❌ Upload error:", err);
-    }
+  const resetCategoryForm = () => {
+    setNewCategoryName("");
   };
 
-  const handleImageChange = () => {
-    const url = imageUrlRef.current?.value || "";
-    setPreviewUrl(url);
+  const resetForm = () => {
+    setTitle("");
+    setLocation("");
+    setStartTime("");
+    setEndTime("");
+    setImageUrl("");
+    setDescription("");
+    setCategoryId("");
+    setDate(""); // als je een apart date-veld hebt
+  };
+
+  const handleSubmit = async () => {
+    const newEvent = {
+      title,
+      location,
+      date,
+      startTime,
+      endTime,
+      imageUrl,
+      description,
+      categoryIds: [Number(categoryId)],
+    };
+
+    await fetch("http://localhost:3000/events", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newEvent),
+    });
+
+    refetchEvents();
+    onOpenChange(false);
+  };
+
+  const handleAddCategory = async () => {
+    await fetch("http://localhost:3000/categories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: newCategoryName }),
+    });
+
+    setNewCategoryName("");
+    refetchCategories();
+    resetCategoryForm();
+    onCatClose();
   };
 
   return (
-    <Modal isOpen={open} onClose={() => onOpenChange(false)} isCentered>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Add Event</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <FormControl mb={4}>
-            <FormLabel>Title</FormLabel>
-            <Input ref={titleRef} placeholder="Title" />
-          </FormControl>
-
-          <FormControl mb={4}>
-            <FormLabel>Description</FormLabel>
-            <Input ref={descriptionRef} placeholder="Description" />
-          </FormControl>
-
-          <FormControl mb={4}>
-            <FormLabel>Location</FormLabel>
-            <Input ref={locationRef} placeholder="Location" />
-          </FormControl>
-
-          <FormControl mb={4}>
-            <FormLabel>Date</FormLabel>
-            <Input ref={dateRef} type="date" />
-          </FormControl>
-
-          <FormControl mb={4}>
-            <FormLabel>Start Time</FormLabel>
-            <Input ref={startTimeRef} type="time" />
-          </FormControl>
-
-          <FormControl mb={4}>
-            <FormLabel>End Time</FormLabel>
-            <Input ref={endTimeRef} type="time" />
-          </FormControl>
-
-          <FormControl mb={4}>
-            <FormLabel>Image URL</FormLabel>
-            <Input
-              ref={imageUrlRef}
-              placeholder="Image URL"
-              onBlur={handleImageChange}
-            />
-          </FormControl>
-
-          {previewUrl && (
-            <Box mt={4}>
-              <Text fontSize="sm" mb={2}>
-                Image Preview:
-              </Text>
-              <Image
-                src={previewUrl}
-                alt="Event preview"
-                borderRadius="md"
-                maxH="200px"
-                objectFit="cover"
+    <>
+      <Modal isOpen={isOpen} onClose={() => onOpenChange(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Add New Event</ModalHeader>
+          <ModalBody>
+            <FormControl mb={3}>
+              <FormLabel>Title</FormLabel>
+              <Input value={title} onChange={(e) => setTitle(e.target.value)} />
+            </FormControl>
+            <FormControl mb={3}>
+              <FormLabel>Location</FormLabel>
+              <Input
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
               />
-            </Box>
-          )}
+              <FormControl mb={3}>
+                <FormLabel>Date</FormLabel>
+                <DatePicker
+                  selected={date ? new Date(date) : null}
+                  onChange={(dateObj) =>
+                    setDate(dateObj.toISOString().split("T")[0])
+                  }
+                  dateFormat="yyyy-MM-dd"
+                  placeholderText="Select a date"
+                  customInput={<Input />} // ✅ Chakra-styled input
+                />
+              </FormControl>
+            </FormControl>
+            <FormControl mb={3}>
+              <FormLabel>Start Time</FormLabel>
+              <Input
+                type="datetime-local"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+              />
+            </FormControl>
+            <FormControl mb={3}>
+              <FormLabel>End Time</FormLabel>
+              <Input
+                type="datetime-local"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+              />
+            </FormControl>
+            <FormControl mb={3}>
+              <FormLabel>Image URL</FormLabel>
+              <Input
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+              />
+            </FormControl>
+            <FormControl mb={3}>
+              <FormLabel>Description</FormLabel>
+              <Textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </FormControl>
+            <FormControl mb={3}>
+              <FormLabel>Category</FormLabel>
+              <HStack>
+                <Select
+                  placeholder="Select category"
+                  value={categoryId}
+                  onChange={(e) => setCategoryId(e.target.value)}
+                >
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </Select>
+                <Button onClick={onCatOpen}>+ Add</Button>
+              </HStack>
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" onClick={handleSubmit}>
+              Save
+            </Button>
+            <Button
+              onClick={() => {
+                onOpenChange(false);
+                resetForm();
+              }}
+              ml={3}
+            >
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
-          <FormControl mt={4}>
-            <FormLabel>Category</FormLabel>
-            <Input ref={categoryRef} placeholder="Category" />
-          </FormControl>
-        </ModalBody>
-        <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={handleSave}>
-            Save
-          </Button>
-          <Button onClick={() => onOpenChange(false)}>Cancel</Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+      {/* Modal voor nieuwe categorie */}
+      <Modal isOpen={isCatOpen} onClose={onCatClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Add Category</ModalHeader>
+          <ModalBody>
+            <FormControl>
+              <FormLabel>Name</FormLabel>
+              <Input
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+              />
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="green" onClick={handleAddCategory}>
+              Add
+            </Button>
+            <Button
+              onClick={() => {
+                onCatClose();
+                resetCategoryForm();
+              }}
+              ml={3}
+            >
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };

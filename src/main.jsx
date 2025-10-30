@@ -6,6 +6,8 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Root } from "./components/Root";
 import { EventsPage } from "./pages/EventsPage";
 import { EventPage } from "./pages/EventPage";
+import { EventsProvider } from "./context/EventsContext"; // ✅ importeer context
+import "react-datepicker/dist/react-datepicker.css";
 
 const router = createBrowserRouter([
   {
@@ -21,7 +23,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider>
-      <RouterProvider router={router} />
+      <EventsProvider>
+        <RouterProvider router={router} />
+      </EventsProvider>
     </Provider>
   </React.StrictMode>
 );
