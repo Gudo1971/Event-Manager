@@ -1,28 +1,20 @@
 import {
+  Box,
   Container,
   Heading,
-  VStack,
-  Button,
-  HStack,
   Text,
-  Box,
+  VStack,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { useEvents } from "../context/EventsContext";
 import { EventPreview } from "../components/EventPreview";
-import { SearchBar } from "../components/SearchBar";
-import { FilterByCategory } from "../components/FilterByCategory";
-import { AddEventDialog } from "../components/AddEventDialog";
 import { Header } from "../components/Header";
 
 export const EventsPage = () => {
   const { events, categories } = useEvents();
-  const { isAddEventOpen, onAddEventChange } = useOutletContext();
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const { searchTerm, selectedCategories } = useOutletContext();
 
   const validEvents = Array.isArray(events)
     ? events.filter(
@@ -49,41 +41,21 @@ export const EventsPage = () => {
     });
   }, [validEvents, searchTerm, selectedCategories]);
 
-  const handleResetFilters = () => {
-    setSearchTerm("");
-    setSelectedCategories([]);
-  };
-
   const bg = useColorModeValue("white", "gray.800");
 
   return (
-    <Container maxW="6xl" py={8}>
-      <Header />
-      <AddEventDialog isOpen={isAddEventOpen} onOpenChange={onAddEventChange} />
+    <Container maxW="7xl" py={8}>
+      {/* 🔹 Hero section */}
+      <Box mb={10}>
+        <Header />
+      </Box>
 
-      <SearchBar
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search for an Event"
-      />
-
-      <HStack mt={6} spacing={4}>
-        <FilterByCategory
-          categories={categories}
-          selected={selectedCategories}
-          onChange={(value) => {
-            if (Array.isArray(value)) setSelectedCategories(value);
-          }}
-        />
-        <Button onClick={handleResetFilters} colorScheme="gray">
-          Reset Filters
-        </Button>
-      </HStack>
-
-      <Heading mt={10} mb={6}>
+      {/* 🔹 Content heading */}
+      <Heading size="md" mb={6}>
         List of events
       </Heading>
 
+      {/* 🔹 Event list */}
       {filteredEvents.length === 0 ? (
         <Box textAlign="center" py={10}>
           <Text fontSize="lg" color="gray.500">
