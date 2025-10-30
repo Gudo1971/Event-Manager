@@ -6,27 +6,47 @@ import {
   VStack,
   Skeleton,
 } from "@chakra-ui/react";
-import { useSearchParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { useEvents } from "../context/EventsContext";
 import { EventPreview } from "../components/EventPreview";
-import { Header } from "../components/Header";
+
+import { useOutletContext } from "react-router-dom";
+
 export const EventsPage = () => {
   const { events, categories } = useEvents();
-  const [searchParams] = useSearchParams();
+  const { selectedCategories, searchTerm } = useOutletContext(); // ✅ uit Root
+  const [showSkeletons, setShowSkeletons] = useState(true);
 
-  const categoryId = parseInt(searchParams.get("category"));
-  const filteredEvents = !isNaN(categoryId)
-    ? events.filter((event) => event.categoryIds?.includes(categoryId))
-    : events;
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSkeletons(false);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
 
-  const isLoading = !Array.isArray(events) || events.length === 0;
+  const filteredEvents = events.filter((event) => {
+    const matchesCategory =
+      selectedCategories.length === 0 ||
+      event.categoryIds?.some((id) => selectedCategories.includes(String(id)));
+
+    const matchesSearch =
+      searchTerm.trim() === "" ||
+      event.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.location?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    return matchesCategory && matchesSearch;
+  });
 
   return (
-    <Box maxW="6xl" mx="auto" py={8}>
-      <Header />
-      <Heading mb={6}>All Events</Heading>
+    <Box maxW="7xl" mx="auto" py={8}>
+      <Heading mb={6}>Skill Sessions & Community Events</Heading>
+      <Text mb={6}>Discover, join, and grow one event at a time.</Text>
 
-      {isLoading ? (
+      <Heading size="md" mb={4}>
+        All Events
+      </Heading>
+
+      {showSkeletons ? (
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
           {Array.from({ length: 6 }).map((_, i) => (
             <VStack key={i} spacing={4} align="stretch">
