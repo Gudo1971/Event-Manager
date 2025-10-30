@@ -1,36 +1,25 @@
-import { Box, Heading, SimpleGrid, Skeleton, VStack } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import {
+  Box,
+  Heading,
+  SimpleGrid,
+  Text,
+  VStack,
+  Skeleton,
+} from "@chakra-ui/react";
+import { useSearchParams } from "react-router-dom";
+import { useEvents } from "../context/EventsContext";
 import { EventPreview } from "../components/EventPreview";
 
 export const EventsPage = () => {
-  const [events, setEvents] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { events, categories } = useEvents();
+  const [searchParams] = useSearchParams();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [eventsRes, categoriesRes] = await Promise.all([
-          fetch("http://localhost:3000/events"),
-          fetch("http://localhost:3000/categories"),
-        ]);
+  const categoryId = parseInt(searchParams.get("category"));
+  const filteredEvents = !isNaN(categoryId)
+    ? events.filter((event) => event.categoryIds?.includes(categoryId))
+    : events;
 
-        const eventsData = await eventsRes.json();
-        const categoryData = await categoriesRes.json();
-
-        setEvents(eventsData);
-        setCategories(categoryData);
-
-        // ⏱️ Forceer skeleton-tijd
-        setTimeout(() => setIsLoading(false), 300);
-      } catch (err) {
-        console.error("❌ Fetch error:", err);
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const isLoading = !Array.isArray(events) || events.length === 0;
 
   return (
     <Box maxW="6xl" mx="auto" py={8}>
@@ -47,9 +36,11 @@ export const EventsPage = () => {
             </VStack>
           ))}
         </SimpleGrid>
+      ) : filteredEvents.length === 0 ? (
+        <Text>No events found.</Text>
       ) : (
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
-          {events.map((event) => (
+          {filteredEvents.map((event) => (
             <EventPreview
               key={event.id}
               event={event}

@@ -1,16 +1,24 @@
-import { VStack, HStack, Icon, Text, Image } from "@chakra-ui/react";
+import { VStack, HStack, Icon, Text, Image, Tag, Wrap } from "@chakra-ui/react";
 import { CalendarIcon, TimeIcon } from "@chakra-ui/icons";
 import { MdLocationOn } from "react-icons/md";
+
+const colorSchemes = [
+  "green",
+  "purple",
+  "orange",
+  "red",
+  "teal",
+  "blue",
+  "pink",
+  "cyan",
+];
 
 export const EventDetail = ({ event, categories }) => {
   if (!event) return null;
 
-  const categoryNames = Array.isArray(event.categoryIds)
-    ? categories
-        .filter((cat) => event.categoryIds.includes(cat.id))
-        .map((cat) => cat.name)
-        .join(", ")
-    : "Geen categorie";
+  const matchedCategories = Array.isArray(event.categoryIds)
+    ? categories.filter((cat) => event.categoryIds.includes(cat.id))
+    : [];
 
   const parsedDate = new Date(event.date);
   const formattedDate = isNaN(parsedDate)
@@ -61,9 +69,18 @@ export const EventDetail = ({ event, categories }) => {
         />
       )}
 
-      <Text fontSize="sm" color="gray.600">
-        Categorieën: {categoryNames}
-      </Text>
+      {matchedCategories.length > 0 && (
+        <Wrap>
+          {matchedCategories.map((cat) => {
+            const color = colorSchemes[cat.id % colorSchemes.length];
+            return (
+              <Tag key={cat.id} colorScheme={color}>
+                {cat.name}
+              </Tag>
+            );
+          })}
+        </Wrap>
+      )}
     </VStack>
   );
 };

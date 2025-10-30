@@ -14,6 +14,7 @@ import {
   AlertDialogBody,
   AlertDialogFooter,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { useRef } from "react";
 import { useEvents } from "../context/EventsContext";
@@ -28,25 +29,46 @@ export const DeleteEventModal = ({ isOpen, onClose, event }) => {
   } = useDisclosure();
 
   const navigate = useNavigate();
-
   const cancelRef = useRef();
+  const toast = useToast(); // ✅ officiële Chakra toast
 
   const handleDelete = async () => {
-    await fetch(`http://localhost:3000/events/${event.id}`, {
-      method: "DELETE",
-    });
+    try {
+      const res = await fetch(`http://localhost:3000/events/${event.id}`, {
+        method: "DELETE",
+      });
 
-    refetchEvents();
-    navigate("/"); // ✅ stuurt terug naar EventsPage
-    onConfirmClose();
-    onClose();
+      if (!res.ok) throw new Error("Failed to delete event");
+
+      toast({
+        title: "Event deleted",
+        description: `"${event.title}" has been removed.`,
+        status: "success",
+        position: "top-right",
+        duration: 5000,
+        isClosable: true,
+      });
+
+      await refetchEvents();
+      navigate("/");
+      onConfirmClose();
+      onClose();
+    } catch (err) {
+      toast({
+        title: "Deletion failed",
+        description: err.message || "Could not delete the event.",
+        status: "error",
+        position: "top-right",
+        duration: 4000,
+        isClosable: true,
+      });
+    }
   };
 
   if (!event) return null;
 
   return (
     <>
-      {/* Hoofdmodal */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -65,7 +87,6 @@ export const DeleteEventModal = ({ isOpen, onClose, event }) => {
         </ModalContent>
       </Modal>
 
-      {/* Bevestigingsalert */}
       <AlertDialog
         isOpen={isConfirmOpen}
         leastDestructiveRef={cancelRef}

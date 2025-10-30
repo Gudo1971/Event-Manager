@@ -13,6 +13,7 @@ import {
   Select,
   HStack,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useEvents } from "../context/EventsContext";
@@ -21,6 +22,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 export const EditEventModal = ({ isOpen, onClose, event }) => {
   const { refetchEvents, refetchCategories, categories } = useEvents();
+  const toast = useToast();
   const {
     isOpen: isCatOpen,
     onOpen: onCatOpen,
@@ -67,7 +69,15 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
       !description.trim() ||
       !categoryId
     ) {
-      alert("Please fill in all required fields.");
+      toast({
+        title: "Missing fields",
+        description: "Please fill in all required fields.",
+        status: "error",
+        variant: "solid",
+        position: "top-right",
+        duration: 4000,
+        isClosable: true,
+      });
       return;
     }
 
@@ -76,12 +86,28 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
     today.setHours(0, 0, 0, 0);
 
     if (isNaN(selectedDate.getTime())) {
-      alert("Please select a valid date.");
+      toast({
+        title: "Invalid date",
+        description: "Please select a valid date.",
+        status: "error",
+        variant: "solid",
+        position: "top-right",
+        duration: 4000,
+        isClosable: true,
+      });
       return;
     }
 
     if (selectedDate < today) {
-      alert("Date must be in the future.");
+      toast({
+        title: "Date too early",
+        description: "Date must be in the future.",
+        status: "error",
+        variant: "solid",
+        position: "top-right",
+        duration: 4000,
+        isClosable: true,
+      });
       return;
     }
 
@@ -108,11 +134,28 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
         throw new Error(`Server error: ${res.status} – ${errorText}`);
       }
 
-      refetchEvents();
+      toast({
+        title: "Event updated",
+        description: `"${updatedEvent.title}" has been saved.`,
+        status: "success",
+        variant: "solid",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      await refetchEvents();
       onClose();
     } catch (err) {
-      console.error("❌ Failed to update event:", err);
-      alert("Failed to update event. See console for details.");
+      toast({
+        title: "Update failed",
+        description: err.message || "Could not update the event.",
+        status: "error",
+        variant: "solid",
+        position: "top-right",
+        duration: 4000,
+        isClosable: true,
+      });
     }
   };
 
