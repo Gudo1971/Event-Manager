@@ -19,7 +19,7 @@ import { useEvents } from "../context/EventsContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
+export const EditEventModal = ({ isOpen, onClose, event }) => {
   const { refetchEvents, refetchCategories, categories } = useEvents();
   const {
     isOpen: isCatOpen,
@@ -57,9 +57,31 @@ export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
   };
 
   const handleSubmit = async () => {
-    if (!event?.id) return;
-    if (!title.trim() || !location.trim() || !date || !categoryId) {
+    if (
+      !title.trim() ||
+      !location.trim() ||
+      !date ||
+      !startTime ||
+      !endTime ||
+      !imageUrl.trim() ||
+      !description.trim() ||
+      !categoryId
+    ) {
       alert("Please fill in all required fields.");
+      return;
+    }
+
+    const selectedDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (isNaN(selectedDate.getTime())) {
+      alert("Please select a valid date.");
+      return;
+    }
+
+    if (selectedDate < today) {
+      alert("Date must be in the future.");
       return;
     }
 
@@ -87,11 +109,10 @@ export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
       }
 
       refetchEvents();
-      onSave?.(updatedEvent);
       onClose();
     } catch (err) {
-      console.error("Failed to save event:", err);
-      alert("Failed to save event. See console for details.");
+      console.error("❌ Failed to update event:", err);
+      alert("Failed to update event. See console for details.");
     }
   };
 
@@ -136,23 +157,27 @@ export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
     refetchCategories();
     onCatClose();
   };
-
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent as="div" noValidate>
           <ModalHeader>Edit Event</ModalHeader>
           <ModalBody>
             <FormControl mb={3}>
               <FormLabel>Title</FormLabel>
-              <Input value={title} onChange={(e) => setTitle(e.target.value)} />
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                formNoValidate
+              />
             </FormControl>
             <FormControl mb={3}>
               <FormLabel>Location</FormLabel>
               <Input
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
+                formNoValidate
               />
             </FormControl>
             <FormControl mb={3}>
@@ -164,23 +189,33 @@ export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
                 }
                 dateFormat="yyyy-MM-dd"
                 placeholderText="Select a date"
-                customInput={<Input />}
+                minDate={new Date()}
+                customInput={
+                  <Input
+                    type="text"
+                    required={false}
+                    formNoValidate
+                    autoComplete="off"
+                  />
+                }
               />
             </FormControl>
             <FormControl mb={3}>
               <FormLabel>Start Time</FormLabel>
               <Input
-                type="datetime-local"
+                type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
+                formNoValidate
               />
             </FormControl>
             <FormControl mb={3}>
               <FormLabel>End Time</FormLabel>
               <Input
-                type="datetime-local"
+                type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
+                formNoValidate
               />
             </FormControl>
             <FormControl mb={3}>
@@ -188,6 +223,7 @@ export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
               <Input
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
+                formNoValidate
               />
             </FormControl>
             <FormControl mb={3}>
@@ -195,6 +231,7 @@ export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                formNoValidate
               />
             </FormControl>
             <FormControl mb={3}>
@@ -204,6 +241,7 @@ export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
                   placeholder="Select category"
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
+                  formNoValidate
                 >
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
@@ -211,15 +249,17 @@ export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
                     </option>
                   ))}
                 </Select>
-                <Button onClick={onCatOpen}>+ Add</Button>
+                <Button type="button" onClick={onCatOpen}>
+                  + Add
+                </Button>
               </HStack>
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" onClick={handleSubmit}>
+            <Button type="button" colorScheme="blue" onClick={handleSubmit}>
               Save
             </Button>
-            <Button onClick={onClose} ml={3}>
+            <Button type="button" onClick={onClose} ml={3}>
               Cancel
             </Button>
           </ModalFooter>
@@ -228,7 +268,7 @@ export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
 
       <Modal isOpen={isCatOpen} onClose={onCatClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent as="div" noValidate>
           <ModalHeader>Add Category</ModalHeader>
           <ModalBody>
             <FormControl>
@@ -236,6 +276,7 @@ export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
               <Input
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
+                formNoValidate
               />
               {categoryError && (
                 <FormLabel color="red.500" fontSize="sm" mt={2}>
@@ -245,10 +286,15 @@ export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="green" onClick={handleAddCategory}>
+            <Button
+              type="button"
+              colorScheme="green"
+              onClick={handleAddCategory}
+            >
               Add
             </Button>
             <Button
+              type="button"
               onClick={() => {
                 onCatClose();
                 resetCategoryForm();

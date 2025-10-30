@@ -59,6 +59,34 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
   }, [isOpen]);
 
   const handleSubmit = async () => {
+    if (
+      !title.trim() ||
+      !location.trim() ||
+      !date ||
+      !startTime ||
+      !endTime ||
+      !imageUrl.trim() ||
+      !description.trim() ||
+      !categoryId
+    ) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    const selectedDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // strip time
+
+    if (isNaN(selectedDate.getTime())) {
+      alert("Please select a valid date.");
+      return;
+    }
+
+    if (selectedDate < today) {
+      alert("Date must be in the future.");
+      return;
+    }
+
     const newEvent = {
       title,
       location,
@@ -70,14 +98,24 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
       categoryIds: [Number(categoryId)],
     };
 
-    await fetch("http://localhost:3000/events", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newEvent),
-    });
+    try {
+      const res = await fetch("http://localhost:3000/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newEvent),
+      });
 
-    refetchEvents();
-    onOpenChange(false);
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Server error: ${res.status} – ${errorText}`);
+      }
+
+      refetchEvents(); // ✅ herlaad lijst
+      onOpenChange(false); // ✅ sluit modal
+    } catch (err) {
+      console.error("❌ Failed to create event:", err);
+      alert("Failed to create event. See console for details.");
+    }
   };
 
   const handleAddCategory = async () => {
@@ -155,7 +193,7 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
             <FormControl mb={3}>
               <FormLabel>Start Time</FormLabel>
               <Input
-                type="datetime-local"
+                type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
               />
@@ -163,7 +201,7 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
             <FormControl mb={3}>
               <FormLabel>End Time</FormLabel>
               <Input
-                type="datetime-local"
+                type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
               />
