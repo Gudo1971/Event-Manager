@@ -1,22 +1,31 @@
-// src/components/Root.jsx
 import { Outlet } from "react-router-dom";
 import { Navigation } from "./Navigation";
 import { Box, Flex } from "@chakra-ui/react";
 import { AddEventDialog } from "./AddEventDialog";
-import { useState } from "react";
 import { ColorModeButton } from "./ui/ColorModeButton";
+import { useDisclosure } from "@chakra-ui/react";
 
 export const Root = () => {
-  const [open, setOpen] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <Box>
       <Flex justify="space-between" align="center" p={4}>
-        <Navigation onAddEvent={() => setOpen(true)} />
+        <Navigation onAddEvent={onOpen} />
         <ColorModeButton />
       </Flex>
-      <Outlet />
-      <AddEventDialog open={open} onOpenChange={setOpen} />
+
+      <Outlet
+        context={{
+          isAddEventOpen: isOpen,
+          onAddEventChange: (open) => (open ? onOpen() : onClose()),
+        }}
+      />
+
+      <AddEventDialog
+        isOpen={isOpen}
+        onOpenChange={(open) => (open ? onOpen() : onClose())}
+      />
     </Box>
   );
 };
