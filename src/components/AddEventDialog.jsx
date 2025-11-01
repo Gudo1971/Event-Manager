@@ -235,11 +235,16 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
           <ModalBody>
             <FormControl mb={3}>
               <FormLabel>Title</FormLabel>
-              <Input value={title} onChange={(e) => setTitle(e.target.value)} />
+              <Input
+                required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
             </FormControl>
             <FormControl mb={3}>
               <FormLabel>Location</FormLabel>
               <Input
+                required
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
               />
@@ -247,6 +252,7 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
             <FormControl mb={3}>
               <FormLabel>Date</FormLabel>
               <DatePicker
+                required
                 selected={date ? new Date(date) : null}
                 onChange={(dateObj) =>
                   setDate(dateObj.toISOString().split("T")[0])
@@ -259,6 +265,7 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
             <FormControl mb={3}>
               <FormLabel>Start Time</FormLabel>
               <Input
+                required
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
@@ -267,6 +274,7 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
             <FormControl mb={3}>
               <FormLabel>End Time</FormLabel>
               <Input
+                required
                 type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
@@ -275,6 +283,7 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
             <FormControl mb={3}>
               <FormLabel>Image URL</FormLabel>
               <Input
+                required
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
               />
@@ -282,6 +291,7 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
             <FormControl mb={3}>
               <FormLabel>Description</FormLabel>
               <Textarea
+                required
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
@@ -324,6 +334,7 @@ export const AddEventDialog = ({ isOpen, onOpenChange }) => {
             <FormControl>
               <FormLabel>Name</FormLabel>
               <Input
+                required
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
               />

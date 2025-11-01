@@ -15,9 +15,11 @@ import { SearchBar } from "./SearchBar";
 import { FilterByCategory } from "./FilterByCategory";
 import { useEvents } from "../context/EventsContext";
 import { useState } from "react";
+import { useSystemColorSync } from "./ui/useSystemColorSync";
 
 export const Root = () => {
   const location = useLocation();
+  useSystemColorSync();
   const showAside =
     location.pathname === "/" || location.pathname === "/events";
 
