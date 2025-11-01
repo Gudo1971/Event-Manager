@@ -9,6 +9,15 @@ import { EventPage } from "./pages/EventPage";
 import { EventsProvider } from "./context/EventsContext"; // ✅ importeer context
 import "react-datepicker/dist/react-datepicker.css";
 import { AboutUs } from "./pages/AboutUs";
+import { ChakraProvider } from "@chakra-ui/react";
+import { theme } from "./components/ui/theme";
+import { useColorMode } from "@chakra-ui/react";
+
+const DebugColorMode = () => {
+  const { colorMode } = useColorMode();
+  console.log("Current color mode:", colorMode);
+  return null;
+};
 const router = createBrowserRouter([
   {
     path: "/",
@@ -24,10 +33,13 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <Provider>
-      <EventsProvider>
-        <RouterProvider router={router} />
-      </EventsProvider>
-    </Provider>
+    <ChakraProvider theme={theme}>
+      <DebugColorMode />
+      <Provider>
+        <EventsProvider>
+          <RouterProvider router={router} />
+        </EventsProvider>
+      </Provider>
+    </ChakraProvider>
   </React.StrictMode>
 );

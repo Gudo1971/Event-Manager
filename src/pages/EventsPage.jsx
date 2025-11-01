@@ -48,7 +48,7 @@ export const EventsPage = () => {
 
       {showSkeletons ? (
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
-          {Array.from({ length: 6 }).map((_, i) => (
+          {Array.from({ length: 12 }).map((_, i) => (
             <VStack key={i} spacing={4} align="stretch">
               <Skeleton height="200px" borderRadius="md" />
               <Skeleton height="24px" />

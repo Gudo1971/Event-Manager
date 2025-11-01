@@ -1,4 +1,3 @@
-// src/ui/theme.js
 import { extendTheme } from "@chakra-ui/react";
 import { checkboxAnatomy } from "@chakra-ui/anatomy";
 import { createMultiStyleConfigHelpers } from "@chakra-ui/react";
@@ -25,7 +24,13 @@ const baseStyle = definePartsStyle({
   },
 });
 
+const config = {
+  initialColorMode: "light", // ✅ fallback
+  useSystemColorMode: true, // ✅ volgt OS dark/light voorkeur
+};
+
 export const theme = extendTheme({
+  config,
   components: {
     Checkbox: defineMultiStyleConfig({ baseStyle }),
   },
