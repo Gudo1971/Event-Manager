@@ -19,14 +19,14 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { InfoIcon } from "@chakra-ui/icons";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useEvents } from "../context/EventsContext";
 import { AddCategoryModal } from "./AddCategoryModal";
 import { useAddCategoryLogic } from "../hooks/useAddCategoryLogic";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-export const AddEventDialog = ({ isOpen, onClose }) => {
+export const EditEventDialog = ({ isOpen, onClose, event }) => {
   const toast = useToast();
   const { categories, refetchEvents } = useEvents();
 
@@ -64,6 +64,19 @@ export const AddEventDialog = ({ isOpen, onClose }) => {
     },
   });
 
+  useEffect(() => {
+    if (event) {
+      setTitle(event.title || "");
+      setLocation(event.location || "");
+      setDate(event.date ? new Date(event.date) : null);
+      setStartTime(event.startTime || "");
+      setEndTime(event.endTime || "");
+      setImageUrl(event.imageUrl || "");
+      setDescription(event.description || "");
+      setSelectedCategoryIds(event.categoryIds || []);
+    }
+  }, [event]);
+
   const resetForm = () => {
     setTitle("");
     setLocation("");
@@ -75,30 +88,11 @@ export const AddEventDialog = ({ isOpen, onClose }) => {
     setSelectedCategoryIds([]);
   };
 
-  const handleCreateEvent = async () => {
-    if (
-      !title.trim() ||
-      !location.trim() ||
-      !date ||
-      !startTime ||
-      !endTime ||
-      selectedCategoryIds.length === 0
-    ) {
-      toast({
-        title: "Missing required fields",
-        description: "Please fill in all required fields before saving.",
-        status: "error",
-        position: "top-right",
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-
+  const handleUpdateEvent = async () => {
     const payload = {
       title,
       location,
-      date: date.toISOString().split("T")[0],
+      date: date?.toISOString().split("T")[0],
       startTime,
       endTime,
       imageUrl,
@@ -107,19 +101,19 @@ export const AddEventDialog = ({ isOpen, onClose }) => {
     };
 
     try {
-      const res = await fetch("http://localhost:3000/events", {
-        method: "POST",
+      const res = await fetch(`http://localhost:3000/events/${event.id}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error("Failed to create event");
+      if (!res.ok) throw new Error("Failed to update event");
 
       await refetchEvents();
 
       toast({
-        title: "Event created",
-        description: `"${title}" has been added.`,
+        title: "Event updated",
+        description: `"${title}" has been saved.`,
         status: "success",
         position: "top-right",
         duration: 3000,
@@ -131,7 +125,7 @@ export const AddEventDialog = ({ isOpen, onClose }) => {
     } catch (err) {
       toast({
         title: "Error",
-        description: err.message || "Could not create event.",
+        description: err.message || "Could not update event.",
         status: "error",
         position: "top-right",
         duration: 3000,
@@ -142,14 +136,14 @@ export const AddEventDialog = ({ isOpen, onClose }) => {
 
   const handleClose = () => {
     const hasChanges =
-      title.trim() ||
-      location.trim() ||
-      date ||
-      startTime ||
-      endTime ||
-      imageUrl.trim() ||
-      description.trim() ||
-      selectedCategoryIds.length > 0;
+      title.trim() !== event?.title ||
+      location.trim() !== event?.location ||
+      date?.toISOString().split("T")[0] !== event?.date ||
+      startTime !== event?.startTime ||
+      endTime !== event?.endTime ||
+      imageUrl.trim() !== event?.imageUrl ||
+      description.trim() !== event?.description ||
+      JSON.stringify(selectedCategoryIds) !== JSON.stringify(event?.categoryIds);
 
     if (hasChanges) {
       toast({
@@ -171,23 +165,17 @@ export const AddEventDialog = ({ isOpen, onClose }) => {
       <Modal isOpen={isOpen} onClose={handleClose} isCentered>
         <ModalOverlay />
         <ModalContent w={{ base: "95%", md: "600px" }}>
-          <ModalHeader>Add Event</ModalHeader>
+          <ModalHeader>Edit Event</ModalHeader>
           <ModalBody>
             <Stack spacing={4}>
               <FormControl isRequired>
                 <FormLabel>Title</FormLabel>
-                <Input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
+                <Input value={title} onChange={(e) => setTitle(e.target.value)} />
               </FormControl>
 
               <FormControl isRequired>
                 <FormLabel>Location</FormLabel>
-                <Input
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                />
+                <Input value={location} onChange={(e) => setLocation(e.target.value)} />
               </FormControl>
 
               <FormControl isRequired>
@@ -202,10 +190,7 @@ export const AddEventDialog = ({ isOpen, onClose }) => {
                       bg="white"
                       borderColor="gray.300"
                       _hover={{ borderColor: "gray.400" }}
-                      _focus={{
-                        borderColor: "blue.500",
-                        boxShadow: "0 0 0 1px #3182ce",
-                      }}
+                      _focus={{ borderColor: "blue.500", boxShadow: "0 0 0 1px #3182ce" }}
                     />
                   }
                 />
@@ -283,7 +268,7 @@ export const AddEventDialog = ({ isOpen, onClose }) => {
           </ModalBody>
           <ModalFooter>
             <Stack direction="row" spacing={3}>
-              <Button colorScheme="green" onClick={handleCreateEvent}>
+              <Button colorScheme="green" onClick={handleUpdateEvent}>
                 Save
               </Button>
               <Button onClick={handleClose} variant="outline">
@@ -308,22 +293,4 @@ export const AddEventDialog = ({ isOpen, onClose }) => {
 
       <Modal isOpen={isInfoOpen} onClose={closeInfoModal} isCentered>
         <ModalOverlay />
-        <ModalContent w={{ base: "95%", md: "400px" }}>
-          <ModalHeader>How it works</ModalHeader>
-          <ModalBody>
-            <Text>
-              When you add a category, it will automatically appear in the
-              dropdown menu of the event form. No refresh is needed — it's
-              instantly available for selection.
-            </Text>
-          </ModalBody>
-          <ModalFooter justifyContent="center">
-            <Button onClick={closeInfoModal} colorScheme="blue">
-              Got it
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
-  );
-};
+        <ModalContent w={{ base:

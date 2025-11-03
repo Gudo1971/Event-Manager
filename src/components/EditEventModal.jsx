@@ -14,20 +14,32 @@ import {
   HStack,
   useDisclosure,
   useToast,
+  IconButton,
+  Text,
 } from "@chakra-ui/react";
+import { InfoIcon } from "@chakra-ui/icons";
 import { useState, useEffect } from "react";
 import { useEvents } from "../context/EventsContext";
+import { useAddCategoryLogic } from "../hooks/useAddCategoryLogic";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
 
 export const EditEventModal = ({ isOpen, onClose, event }) => {
-  const { refetchEvents, refetchCategories, categories } = useEvents();
+  const { refetchEvents, categories, refetchCategories } = useEvents();
   const toast = useToast();
+  const navigate = useNavigate();
+
   const {
     isOpen: isCatOpen,
     onOpen: onCatOpen,
     onClose: onCatClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isInfoOpen,
+    onOpen: openInfoModal,
+    onClose: closeInfoModal,
   } = useDisclosure();
 
   const [title, setTitle] = useState("");
@@ -38,10 +50,20 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [description, setDescription] = useState("");
   const [categoryId, setCategoryId] = useState("");
-  const [newCategoryName, setNewCategoryName] = useState("");
-  const [categoryError, setCategoryError] = useState("");
 
-  const navigate = useNavigate();
+  const {
+    newCategoryName,
+    setNewCategoryName,
+    categoryError,
+    handleAddCategory,
+    resetCategoryForm,
+  } = useAddCategoryLogic({
+    onClose: onCatClose,
+    onCategoryAdded: (newCat) => {
+      setCategoryId(newCat.id.toString());
+      refetchCategories();
+    },
+  });
 
   useEffect(() => {
     if (event) {
@@ -56,9 +78,29 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
     }
   }, [event]);
 
-  const resetCategoryForm = () => {
-    setNewCategoryName("");
-    setCategoryError("");
+  const handleClose = () => {
+    const hasChanges =
+      title.trim() !== event?.title ||
+      location.trim() !== event?.location ||
+      date !== event?.date ||
+      startTime !== event?.startTime ||
+      endTime !== event?.endTime ||
+      imageUrl.trim() !== event?.imageUrl ||
+      description.trim() !== event?.description ||
+      categoryId !== event?.categoryIds?.[0]?.toString();
+
+    if (hasChanges) {
+      toast({
+        title: "Nothing saved",
+        description: "Your changes were discarded.",
+        status: "info",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+
+    onClose();
   };
 
   const handleSubmit = async () => {
@@ -76,12 +118,10 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
         title: "Missing fields",
         description: "Please fill in all required fields.",
         status: "error",
-        variant: "solid",
         position: "top-right",
         duration: 4000,
         isClosable: true,
       });
-
       return;
     }
 
@@ -89,25 +129,11 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    if (isNaN(selectedDate.getTime())) {
+    if (isNaN(selectedDate.getTime()) || selectedDate < today) {
       toast({
         title: "Invalid date",
-        description: "Please select a valid date.",
+        description: "Please select a valid future date.",
         status: "error",
-        variant: "solid",
-        position: "top-right",
-        duration: 4000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    if (selectedDate < today) {
-      toast({
-        title: "Date too early",
-        description: "Date must be in the future.",
-        status: "error",
-        variant: "solid",
         position: "top-right",
         duration: 4000,
         isClosable: true,
@@ -133,16 +159,12 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
         body: JSON.stringify(updatedEvent),
       });
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Server error: ${res.status} – ${errorText}`);
-      }
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
 
       toast({
         title: "Event updated",
         description: `"${updatedEvent.title}" has been saved.`,
         status: "success",
-        variant: "solid",
         position: "top-right",
         duration: 3000,
         isClosable: true,
@@ -156,7 +178,6 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
         title: "Update failed",
         description: err.message || "Could not update the event.",
         status: "error",
-        variant: "solid",
         position: "top-right",
         duration: 4000,
         isClosable: true,
@@ -164,88 +185,40 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
     }
   };
 
-  const handleAddCategory = async () => {
-    const name = newCategoryName.trim();
-    if (!name) return;
-
-    const lowerName = name.toLowerCase();
-
-    const exactMatch = categories.find(
-      (cat) => cat.name.toLowerCase() === lowerName
-    );
-
-    if (exactMatch) {
-      setCategoryError(`Category "${name}" already exists.`);
-      return;
-    }
-
-    const fuzzyMatch = categories.find((cat) => {
-      const existing = cat.name.toLowerCase();
-      return (
-        existing.includes(lowerName) ||
-        lowerName.includes(existing) ||
-        existing.startsWith(lowerName) ||
-        lowerName.startsWith(existing)
-      );
-    });
-
-    if (fuzzyMatch) {
-      setCategoryError(`Did you mean "${fuzzyMatch.name}"?`);
-      return;
-    }
-
-    await fetch("http://localhost:3000/categories", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name }),
-    });
-
-    setNewCategoryName("");
-    setCategoryError("");
-    refetchCategories();
-    onCatClose();
-  };
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={handleClose} isCentered>
         <ModalOverlay />
-        <ModalContent as="div" noValidate>
+        <ModalContent>
           <ModalHeader>Edit Event</ModalHeader>
           <ModalBody>
             <FormControl mb={3}>
               <FormLabel>Title</FormLabel>
-              <Input
-                required
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                formNoValidate
-              />
+              <Input value={title} onChange={(e) => setTitle(e.target.value)} />
             </FormControl>
             <FormControl mb={3}>
               <FormLabel>Location</FormLabel>
               <Input
-                required
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                formNoValidate
               />
             </FormControl>
             <FormControl mb={3}>
               <FormLabel>Date</FormLabel>
               <DatePicker
                 selected={date ? new Date(date) : null}
-                onChange={(dateObj) =>
-                  setDate(dateObj.toISOString().split("T")[0])
-                }
+                onChange={(d) => setDate(d.toISOString().split("T")[0])}
                 dateFormat="yyyy-MM-dd"
-                placeholderText="Select a date"
                 minDate={new Date()}
                 customInput={
                   <Input
-                    type="text"
-                    required={true}
-                    formNoValidate
-                    autoComplete="off"
+                    bg="white"
+                    borderColor="gray.300"
+                    _hover={{ borderColor: "gray.400" }}
+                    _focus={{
+                      borderColor: "blue.500",
+                      boxShadow: "0 0 0 1px #3182ce",
+                    }}
                   />
                 }
               />
@@ -253,50 +226,41 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
             <FormControl mb={3}>
               <FormLabel>Start Time</FormLabel>
               <Input
-                required
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                formNoValidate
               />
             </FormControl>
             <FormControl mb={3}>
               <FormLabel>End Time</FormLabel>
               <Input
                 type="time"
-                required
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                formNoValidate
               />
             </FormControl>
             <FormControl mb={3}>
               <FormLabel>Image URL</FormLabel>
               <Input
-                required
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                formNoValidate
               />
             </FormControl>
             <FormControl mb={3}>
               <FormLabel>Description</FormLabel>
               <Textarea
-                required
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                formNoValidate
               />
             </FormControl>
             <FormControl mb={3}>
               <FormLabel>Category</FormLabel>
               <HStack>
                 <Select
-                  required
-                  placeholder="Select category"
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
-                  formNoValidate
+                  placeholder="Select category"
+                  flex="1"
                 >
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
@@ -304,26 +268,34 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
                     </option>
                   ))}
                 </Select>
-                <Button type="button" onClick={onCatOpen}>
-                  + Add
-                </Button>
+                <Button onClick={onCatOpen}>+ Add</Button>
+                <IconButton
+                  icon={<InfoIcon color="white" boxSize="1.2em" />}
+                  aria-label="Category info"
+                  onClick={openInfoModal}
+                  size="sm"
+                  isRound
+                  _hover={{ bg: "blue.700" }}
+                  height="32px"
+                />
               </HStack>
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button type="button" colorScheme="blue" onClick={handleSubmit}>
+            <Button colorScheme="blue" onClick={handleSubmit}>
               Save
             </Button>
-            <Button type="button" onClick={onClose} ml={3}>
+            <Button onClick={handleClose} ml={3}>
               Cancel
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={isCatOpen} onClose={onCatClose}>
+      {/* Add Category Modal */}
+      <Modal isOpen={isCatOpen} onClose={onCatClose} isCentered>
         <ModalOverlay />
-        <ModalContent as="div" noValidate>
+        <ModalContent>
           <ModalHeader>Add Category</ModalHeader>
           <ModalBody>
             <FormControl>
@@ -331,25 +303,19 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
               <Input
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
-                formNoValidate
               />
               {categoryError && (
-                <FormLabel color="red.500" fontSize="sm" mt={2}>
+                <Text color="red.500" fontSize="sm" mt={2}>
                   {categoryError}
-                </FormLabel>
+                </Text>
               )}
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button
-              type="button"
-              colorScheme="green"
-              onClick={handleAddCategory}
-            >
+            <Button colorScheme="green" onClick={handleAddCategory}>
               Add
             </Button>
             <Button
-              type="button"
               onClick={() => {
                 onCatClose();
                 resetCategoryForm();
@@ -357,6 +323,26 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
               ml={3}
             >
               Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Info Modal */}
+      <Modal isOpen={isInfoOpen} onClose={closeInfoModal} isCentered>
+        <ModalOverlay />
+        <ModalContent w={{ base: "95%", md: "400px" }}>
+          <ModalHeader>How it works</ModalHeader>
+          <ModalBody>
+            <Text>
+              When you add a category, it will automatically appear in the
+              dropdown menu of the event form. No refresh is needed — it's
+              instantly available for selection.
+            </Text>
+          </ModalBody>
+          <ModalFooter justifyContent="center">
+            <Button onClick={closeInfoModal} colorScheme="blue">
+              Got it
             </Button>
           </ModalFooter>
         </ModalContent>

@@ -130,10 +130,7 @@ export const Root = () => {
         />
       </Box>
 
-      <AddEventDialog
-        isOpen={isOpen}
-        onOpenChange={(open) => (open ? onOpen() : onClose())}
-      />
+      <AddEventDialog isOpen={isOpen} onClose={onClose} />
     </Flex>
   );
 };
