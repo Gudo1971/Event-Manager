@@ -9,7 +9,6 @@ import {
   useDisclosure,
   useToast,
   useColorModeValue,
-  Image,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useEvents } from "../context/EventsContext";
@@ -152,17 +151,7 @@ export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
         <ModalContent bg={modalBg} px={{ base: 4, md: 6 }} py={4}>
           <ModalHeader>Edit Event</ModalHeader>
           <ModalBody>
-            {values.imageUrl && (
-              <Image
-                src={values.imageUrl}
-                alt={values.title}
-                borderRadius="md"
-                maxH="200px"
-                objectFit="cover"
-                mb={4}
-                fallbackSrc="/fallback.jpg"
-              />
-            )}
+            
             <EventForm
               values={values}
               setters={setters}
