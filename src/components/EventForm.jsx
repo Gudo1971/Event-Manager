@@ -9,19 +9,14 @@ import {
   IconButton,
   Button,
   useColorModeValue,
+  Tooltip,
 } from "@chakra-ui/react";
 import { InfoIcon } from "@chakra-ui/icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { DateInput } from "./DateInput";
 
-export const EventForm = ({
-  values,
-  setters,
-  categories,
-  onCatOpen,
-  onInfoOpen,
-}) => {
+export const EventForm = ({ values, setters, categories, onCatOpen }) => {
   const fieldBg = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("gray.300", "gray.600");
 
@@ -98,11 +93,27 @@ export const EventForm = ({
       </Stack>
 
       <FormControl mb={{ base: 4, md: 6 }}>
-        <FormLabel>Image URL</FormLabel>
+        <HStack justify="space-between" align="center" mb={1}>
+          <FormLabel mb="0">Image URL</FormLabel>
+          <Tooltip
+            label="Upload your image using a hosting service like Imgur or Cloudinary, and paste the direct link here."
+            fontSize="sm"
+            hasArrow
+            placement="top"
+          >
+            <IconButton
+              icon={<InfoIcon />}
+              size="sm"
+              variant="ghost"
+              aria-label="Image URL info"
+            />
+          </Tooltip>
+        </HStack>
         <Input
           required
           value={values.imageUrl}
           onChange={(e) => setters.setImageUrl(e.target.value)}
+          placeholder="https://example.com/image.jpg"
           bg={fieldBg}
           borderColor={borderColor}
         />
@@ -137,16 +148,19 @@ export const EventForm = ({
               </option>
             ))}
           </Select>
-          <IconButton
-            icon={<InfoIcon color="white" boxSize="1.2em" />}
-            aria-label="Category info"
-            onClick={onInfoOpen}
-            size="sm"
-            isRound
-            bg="blue.600"
-            _hover={{ bg: "blue.700" }}
-            height="32px"
-          />
+          <Tooltip
+            label="Categories help group events. You can add new ones if needed."
+            fontSize="sm"
+            hasArrow
+            placement="top"
+          >
+            <IconButton
+              icon={<InfoIcon />}
+              size="sm"
+              variant="ghost"
+              aria-label="Category info"
+            />
+          </Tooltip>
           <Button onClick={onCatOpen} size="sm">
             + Add
           </Button>

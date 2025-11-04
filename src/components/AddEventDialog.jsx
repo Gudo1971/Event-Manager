@@ -16,7 +16,6 @@ import { useAddCategoryLogic } from "../hooks/useAddCategoryLogic";
 import { useEventFormLogic } from "../hooks/useEventFormLogic.jsx";
 import { EventForm } from "./EventForm";
 import { CategoryModal } from "./CategoryModal";
-import { InfoModal } from "./InfoModal";
 
 export const AddEventDialog = ({ isOpen, onClose }) => {
   const { refetchEvents, categories, refetchCategories } = useEvents();
@@ -27,12 +26,6 @@ export const AddEventDialog = ({ isOpen, onClose }) => {
     isOpen: isCatOpen,
     onOpen: onCatOpen,
     onClose: onCatClose,
-  } = useDisclosure();
-
-  const {
-    isOpen: isInfoOpen,
-    onOpen: openInfoModal,
-    onClose: closeInfoModal,
   } = useDisclosure();
 
   const { values, setters, isValid, resetForm, hasChanges } = useEventFormLogic(
@@ -159,7 +152,6 @@ export const AddEventDialog = ({ isOpen, onClose }) => {
               setters={setters}
               categories={categories}
               onCatOpen={onCatOpen}
-              onInfoOpen={openInfoModal}
             />
           </ModalBody>
           <ModalFooter justifyContent="flex-end" gap={3}>
@@ -183,8 +175,6 @@ export const AddEventDialog = ({ isOpen, onClose }) => {
         resetCategoryForm={resetCategoryForm}
         hasChanges={() => newCategoryName.trim() !== ""}
       />
-
-      <InfoModal isOpen={isInfoOpen} onClose={closeInfoModal} />
     </>
   );
 };
