@@ -164,7 +164,7 @@ export const AboutUs = () => {
               interfaces.
             </Text>
             <Text fontSize="md" color={textColor}>
-              Let’s build something meaningful — scalable, intuitive, and
+              Let’s build something meaningful scalable, intuitive, and
               human-centered.
             </Text>
           </Stack>
