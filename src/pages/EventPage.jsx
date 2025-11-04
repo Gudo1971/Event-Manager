@@ -4,11 +4,13 @@ import {
   Box,
   Button,
   VStack,
+  HStack,
   Card,
   CardHeader,
   CardBody,
   CardFooter,
   Skeleton,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import { EventDetail } from "../components/EventDetail";
@@ -48,7 +50,6 @@ export const EventPage = () => {
         setEvent(eventData);
         setCategories(categoryData);
 
-        // ⏱️ Forceer minimale skeleton-tijd
         setTimeout(() => setIsLoading(false), 300);
       } catch (err) {
         console.error("❌ Fetch error:", err);
@@ -59,8 +60,8 @@ export const EventPage = () => {
     fetchData();
   }, [eventId]);
 
-  const handleSave = (updateEvent) => {
-    setEvent(updateEvent);
+  const handleSave = (updatedEvent) => {
+    setEvent(updatedEvent);
     onEditClose();
   };
 
@@ -79,16 +80,23 @@ export const EventPage = () => {
     }
   };
 
+  const buttonLayout = useBreakpointValue({ base: "column", sm: "row" });
+
   if (isLoading) {
     return (
-      <Box maxW="4xl" mx="auto" py={8}>
-        <Card variant="outline" p={6}>
+      <Box
+        maxW="4xl"
+        mx="auto"
+        px={{ base: 4, md: 8 }}
+        py={{ base: 6, md: 10 }}
+      >
+        <Card variant="outline" p={{ base: 4, md: 6 }}>
           <CardHeader>
-            <Skeleton height="32px" width="200px" />
+            <Skeleton height="32px" width={{ base: "150px", md: "200px" }} />
           </CardHeader>
 
           <CardBody>
-            <Skeleton height="200px" mb={4} />
+            <Skeleton height={{ base: "180px", md: "200px" }} mb={4} />
             <Skeleton height="20px" mb={2} />
             <Skeleton height="20px" mb={2} />
             <Skeleton height="20px" mb={2} />
@@ -106,14 +114,24 @@ export const EventPage = () => {
   }
 
   if (!event || categories.length === 0) {
-    return <Box p={8}>Event not found.</Box>;
+    return (
+      <Box px={{ base: 4, md: 8 }} py={{ base: 6, md: 10 }}>
+        Event not found.
+      </Box>
+    );
   }
 
   return (
-    <Box maxW="4xl" mx="auto" py={8}>
-      <Card variant="outline" p={6}>
+    <Box maxW="4xl" mx="auto" px={{ base: 4, md: 8 }} py={{ base: 6, md: 10 }}>
+      <Card variant="outline" p={{ base: 4, md: 6 }}>
         <CardHeader>
-          <Heading size="lg">Event Details</Heading>
+          <Heading
+            size="lg"
+            fontSize={{ base: "xl", md: "2xl" }}
+            textAlign={{ base: "center", md: "left" }}
+          >
+            Event Details
+          </Heading>
         </CardHeader>
 
         <CardBody>
@@ -121,29 +139,45 @@ export const EventPage = () => {
         </CardBody>
 
         <CardFooter>
-          <VStack align="stretch" spacing={4} w="full">
-            <Button colorScheme="blue" onClick={onEditOpen}>
-              Edit Event
-            </Button>
-            <Button colorScheme="red" onClick={onDeleteOpen}>
-              Delete Event
-            </Button>
-          </VStack>
+          {buttonLayout === "column" ? (
+            <VStack align="stretch" spacing={4} w="full">
+              <Button colorScheme="blue" onClick={onEditOpen}>
+                Edit Event
+              </Button>
+              <Button colorScheme="red" onClick={onDeleteOpen}>
+                Delete Event
+              </Button>
+            </VStack>
+          ) : (
+            <HStack spacing={4} w="full" justify="flex-end">
+              <Button colorScheme="blue" onClick={onEditOpen}>
+                Edit Event
+              </Button>
+              <Button colorScheme="red" onClick={onDeleteOpen}>
+                Delete Event
+              </Button>
+            </HStack>
+          )}
         </CardFooter>
       </Card>
 
-      <EditEventModal
-        isOpen={isEditOpen}
-        onClose={onEditClose}
-        event={event}
-        onSave={handleSave}
-      />
-      <DeleteEventModal
-        isOpen={isDeleteOpen}
-        onClose={onDeleteClose}
-        event={event}
-        onDelete={handleDelete}
-      />
+      {/* ✅ Modals renderen pas als event bestaat */}
+      {event && (
+        <>
+          <EditEventModal
+            isOpen={isEditOpen}
+            onClose={onEditClose}
+            event={event}
+            onSave={handleSave}
+          />
+          <DeleteEventModal
+            isOpen={isDeleteOpen}
+            onClose={onDeleteClose}
+            event={event}
+            onDelete={handleDelete}
+          />
+        </>
+      )}
     </Box>
   );
 };

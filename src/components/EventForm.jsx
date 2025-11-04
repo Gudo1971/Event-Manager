@@ -1,153 +1,187 @@
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   FormControl,
   FormLabel,
   Input,
   Textarea,
   Select,
   Stack,
+  HStack,
+  IconButton,
   Button,
+  useColorModeValue,
+  Tooltip,
 } from "@chakra-ui/react";
+import { InfoIcon } from "@chakra-ui/icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { DateInput } from "./DateInput";
 
-export const EventForm = ({
-  isOpen,
-  onClose,
-  handleSubmit,
-  categories,
-  titleText = "Add Event",
-  ...fields
-}) => (
-  <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
-    <ModalOverlay />
-    <ModalContent
-      as="form"
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSubmit();
-      }}
-      maxH="80vh"
-      overflowY="auto"
-      w={{ base: "95%", md: "600px" }}
-    >
-      <ModalHeader>{titleText}</ModalHeader>
-      <ModalBody>
-        <FormControl mb={4}>
-          <FormLabel>Title</FormLabel>
-          <Input
-            required
-            value={fields.title}
-            onChange={(e) => fields.setTitle(e.target.value)}
-          />
-        </FormControl>
+export const EventForm = ({ values, setters, categories, onCatOpen }) => {
+  const fieldBg = useColorModeValue("white", "gray.800");
+  const borderColor = useColorModeValue("gray.300", "gray.600");
 
-        <FormControl mb={4}>
-          <FormLabel>Location</FormLabel>
-          <Input
-            required
-            value={fields.location}
-            onChange={(e) => fields.setLocation(e.target.value)}
-          />
-        </FormControl>
+  return (
+    <>
+      <FormControl mb={{ base: 4, md: 6 }}>
+        <FormLabel>Title</FormLabel>
+        <Input
+          required
+          value={values.title}
+          onChange={(e) => setters.setTitle(e.target.value)}
+          bg={fieldBg}
+          borderColor={borderColor}
+        />
+      </FormControl>
 
-        <FormControl mb={4}>
-          <FormLabel>Date</FormLabel>
-          <DatePicker
-            selected={fields.date ? new Date(fields.date) : null}
-            onChange={(dateObj) =>
-              fields.setDate(dateObj.toISOString().split("T")[0])
-            }
-            dateFormat="yyyy-MM-dd"
-            minDate={new Date()}
-            customInput={<Input type="text" required />}
-          />
-        </FormControl>
+      <FormControl mb={{ base: 4, md: 6 }}>
+        <FormLabel>Location</FormLabel>
+        <Input
+          required
+          value={values.location}
+          onChange={(e) => setters.setLocation(e.target.value)}
+          bg={fieldBg}
+          borderColor={borderColor}
+        />
+      </FormControl>
 
-        <Stack
-          direction={{ base: "column", md: "row" }}
-          spacing={4}
-          mb={4}
-          w="full"
-        >
-          <FormControl>
-            <FormLabel>Start Time</FormLabel>
-            <Input
-              type="time"
-              required
-              value={fields.startTime}
-              onChange={(e) => fields.setStartTime(e.target.value)}
+      <FormControl mb={{ base: 4, md: 6 }}>
+        <FormLabel> Start date</FormLabel>
+        <DatePicker
+          selected={values.startDate ? new Date(values.startDate) : null}
+          onChange={(dateObj) =>
+            setters.setStartDate(dateObj.toISOString().split("T")[0])
+          }
+          dateFormat="yyyy-MM-dd"
+          minDate={new Date()}
+          customInput={
+            <DateInput
+              value={values.startDate}
+              placeholder="Select start date"
+              error={!values.startDate ? "Start date is required" : ""}
             />
-          </FormControl>
-          <FormControl>
-            <FormLabel>End Time</FormLabel>
-            <Input
-              type="time"
-              required
-              value={fields.endTime}
-              onChange={(e) => fields.setEndTime(e.target.value)}
+          }
+        />
+        <FormLabel> End date</FormLabel>
+        <DatePicker
+          selected={values.endDate ? new Date(values.endDate) : null}
+          onChange={(dateObj) =>
+            setters.setEndDate(dateObj.toISOString().split("T")[0])
+          }
+          dateFormat="yyyy-MM-dd"
+          minDate={values.startDate ? new Date(values.startDate) : new Date()}
+          customInput={
+            <DateInput
+              value={values.endDate}
+              placeholder="Select end date"
+              error={!values.endDate ? "End date is required" : ""}
             />
-          </FormControl>
-        </Stack>
+          }
+        />
+      </FormControl>
 
-        <FormControl mb={4}>
-          <FormLabel>Image URL</FormLabel>
+      <Stack
+        direction={{ base: "column", md: "row" }}
+        spacing={4}
+        mb={{ base: 4, md: 6 }}
+      >
+        <FormControl>
+          <FormLabel>Start Time</FormLabel>
           <Input
+            type="time"
             required
-            value={fields.imageUrl}
-            onChange={(e) => fields.setImageUrl(e.target.value)}
+            value={values.startTime}
+            onChange={(e) => setters.setStartTime(e.target.value)}
+            bg={fieldBg}
+            borderColor={borderColor}
           />
         </FormControl>
-
-        <FormControl mb={4}>
-          <FormLabel>Description</FormLabel>
-          <Textarea
+        <FormControl>
+          <FormLabel>End Time</FormLabel>
+          <Input
+            type="time"
             required
-            value={fields.description}
-            onChange={(e) => fields.setDescription(e.target.value)}
+            value={values.endTime}
+            onChange={(e) => setters.setEndTime(e.target.value)}
+            bg={fieldBg}
+            borderColor={borderColor}
           />
         </FormControl>
+      </Stack>
 
-        <FormControl mb={4}>
-          <FormLabel>Category</FormLabel>
-          <Stack
-            direction={{ base: "column", md: "row" }}
-            spacing={3}
-            align="start"
+      <FormControl mb={{ base: 4, md: 6 }}>
+        <HStack justify="space-between" align="center" mb={1}>
+          <FormLabel mb="0">Image URL</FormLabel>
+          <Tooltip
+            label="Upload your image using a hosting service like Imgur or Cloudinary, and paste the direct link here."
+            fontSize="sm"
+            hasArrow
+            placement="top"
           >
-            <Select
-              required
-              value={fields.categoryId}
-              onChange={(e) => fields.setCategoryId(e.target.value)}
-              placeholder="Select category"
-              flex="1"
-            >
-              {categories?.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </Select>
-            <Button onClick={fields.onCatOpen} w={{ base: "full", md: "auto" }}>
-              + Add
-            </Button>
-          </Stack>
-        </FormControl>
-      </ModalBody>
+            <IconButton
+              icon={<InfoIcon />}
+              size="sm"
+              variant="ghost"
+              aria-label="Image URL info"
+            />
+          </Tooltip>
+        </HStack>
+        <Input
+          required
+          value={values.imageUrl}
+          onChange={(e) => setters.setImageUrl(e.target.value)}
+          placeholder="https://example.com/image.jpg"
+          bg={fieldBg}
+          borderColor={borderColor}
+        />
+      </FormControl>
 
-      <ModalFooter>
-        <Button type="submit" colorScheme="blue">
-          Save
-        </Button>
-        <Button onClick={onClose} ml={3}>
-          Cancel
-        </Button>
-      </ModalFooter>
-    </ModalContent>
-  </Modal>
-);
+      <FormControl mb={{ base: 4, md: 6 }}>
+        <FormLabel>Description</FormLabel>
+        <Textarea
+          required
+          value={values.description}
+          onChange={(e) => setters.setDescription(e.target.value)}
+          bg={fieldBg}
+          borderColor={borderColor}
+        />
+      </FormControl>
+
+      <FormControl mb={{ base: 4, md: 6 }}>
+        <FormLabel>Category</FormLabel>
+        <HStack spacing={3} align="start" flexWrap="wrap">
+          <Select
+            required
+            value={values.categoryId}
+            onChange={(e) => setters.setCategoryId(e.target.value)}
+            placeholder="Select category"
+            flex="1"
+            bg={fieldBg}
+            borderColor={borderColor}
+          >
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </Select>
+          <Tooltip
+            label="Categories help group events. You can add new ones if needed."
+            fontSize="sm"
+            hasArrow
+            placement="top"
+          >
+            <IconButton
+              icon={<InfoIcon />}
+              size="sm"
+              variant="ghost"
+              aria-label="Category info"
+            />
+          </Tooltip>
+          <Button onClick={onCatOpen} size="sm">
+            + Add
+          </Button>
+        </HStack>
+      </FormControl>
+    </>
+  );
+};

@@ -21,8 +21,14 @@ export const FilterByCategory = ({ categories, selected, onChange }) => {
   };
 
   return (
-    <Box>
-      <Heading size="sm" mb={4}>
+    <Box
+      w="full"
+      maxW="500px"
+      mx="auto"
+      px={{ base: 4, md: 0 }}
+      mb={{ base: 6, md: 8 }}
+    >
+      <Heading size="sm" mb={4} textAlign={{ base: "center", md: "left" }}>
         Category Filter
       </Heading>
 
@@ -33,6 +39,8 @@ export const FilterByCategory = ({ categories, selected, onChange }) => {
         size="sm"
         w="full"
         textAlign="left"
+        aria-expanded={isOpen}
+        aria-controls="category-collapse"
       >
         {selected.length > 0
           ? `${selected.length} selected`
@@ -40,8 +48,8 @@ export const FilterByCategory = ({ categories, selected, onChange }) => {
       </Button>
 
       <Collapse in={isOpen} animateOpacity>
-        <Box mt={3}>
-          <Stack>
+        <Box mt={3} px={{ base: 2, md: 0 }} id="category-collapse">
+          <Stack spacing={{ base: 2, md: 3 }}>
             {categories.map((category) => (
               <Checkbox
                 key={category.id}
