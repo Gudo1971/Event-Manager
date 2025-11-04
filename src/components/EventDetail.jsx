@@ -28,17 +28,22 @@ export const EventDetail = ({ event, categories }) => {
   const matchedCategories = Array.isArray(event.categoryIds)
     ? categories.filter((cat) => event.categoryIds.includes(cat.id))
     : [];
-
-  const parsedDate = new Date(event.date);
-  const formattedDate = isNaN(parsedDate)
-    ? event.date
-    : parsedDate.toLocaleDateString("nl-NL", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      });
-
+  const start = new Date(event.startDate);
+  const end = new Date(event.endDate);
+  const formattedDate =
+    isNaN(start.getTime()) || isNaN(end.getTime())
+      ? "Datum onbekend"
+      : `${start.toLocaleDateString("nl-NL", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })} – ${end.toLocaleDateString("nl-NL", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })}`;
   const labelColor = useColorModeValue("gray.600", "gray.400");
   const textColor = useColorModeValue("gray.800", "gray.100");
 
@@ -55,7 +60,17 @@ export const EventDetail = ({ event, categories }) => {
       <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="bold">
         {event.title}
       </Text>
-
+      {event.imageUrl && (
+        <Image
+          src={event.imageUrl}
+          alt={event.title}
+          borderRadius="md"
+          objectFit="cover"
+          width="100%"
+          maxH={{ base: "200px", md: "300px" }}
+          mt={2}
+        />
+      )}
       <Text fontSize={{ base: "sm", md: "md" }}>{event.description}</Text>
 
       <HStack spacing={2}>
@@ -77,18 +92,6 @@ export const EventDetail = ({ event, categories }) => {
         <TimeIcon color={labelColor} />
         <Text fontSize="sm">Einde: {event.endTime}</Text>
       </HStack>
-
-      {event.image && (
-        <Image
-          src={event.image}
-          alt={event.title}
-          borderRadius="md"
-          objectFit="cover"
-          width="100%"
-          maxH={{ base: "200px", md: "300px" }}
-          mt={2}
-        />
-      )}
 
       {matchedCategories.length > 0 && (
         <Wrap spacing={2} mt={2}>

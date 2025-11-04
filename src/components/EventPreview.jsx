@@ -43,7 +43,7 @@ export const EventPreview = ({ event, categories }) => {
         }}
       >
         <Image
-          src={event.image}
+          src={event.imageUrl}
           alt={event.title}
           borderRadius="md"
           objectFit="cover"

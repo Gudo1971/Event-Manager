@@ -45,19 +45,35 @@ export const EventForm = ({ values, setters, categories, onCatOpen }) => {
       </FormControl>
 
       <FormControl mb={{ base: 4, md: 6 }}>
-        <FormLabel>Date</FormLabel>
+        <FormLabel> Start date</FormLabel>
         <DatePicker
-          selected={values.date ? new Date(values.date) : null}
+          selected={values.startDate ? new Date(values.startDate) : null}
           onChange={(dateObj) =>
-            setters.setDate(dateObj.toISOString().split("T")[0])
+            setters.setStartDate(dateObj.toISOString().split("T")[0])
           }
           dateFormat="yyyy-MM-dd"
           minDate={new Date()}
           customInput={
             <DateInput
-              value={values.date}
-              placeholder="Select date"
-              error={!values.date ? "Date is required" : ""}
+              value={values.startDate}
+              placeholder="Select start date"
+              error={!values.startDate ? "Start date is required" : ""}
+            />
+          }
+        />
+        <FormLabel> End date</FormLabel>
+        <DatePicker
+          selected={values.endDate ? new Date(values.endDate) : null}
+          onChange={(dateObj) =>
+            setters.setEndDate(dateObj.toISOString().split("T")[0])
+          }
+          dateFormat="yyyy-MM-dd"
+          minDate={values.startDate ? new Date(values.startDate) : new Date()}
+          customInput={
+            <DateInput
+              value={values.endDate}
+              placeholder="Select end date"
+              error={!values.endDate ? "End date is required" : ""}
             />
           }
         />

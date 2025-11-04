@@ -66,14 +66,21 @@ export const AddEventDialog = ({ isOpen, onClose }) => {
       return;
     }
 
-    const selectedDate = new Date(values.date);
+    const start = new Date(values.startDate);
+    const end = new Date(values.endDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    if (isNaN(selectedDate.getTime()) || selectedDate < today) {
+    if (
+      isNaN(start.getTime()) ||
+      isNaN(end.getTime()) ||
+      start < today ||
+      end < start
+    ) {
       toast({
-        title: "Invalid date",
-        description: "Please select a valid future date.",
+        title: "Invalid dates",
+        description:
+          "Please select valid future dates. End date must be after start date.",
         status: "error",
         position: "top-right",
         duration: 4000,
@@ -83,9 +90,11 @@ export const AddEventDialog = ({ isOpen, onClose }) => {
     }
 
     const newEvent = {
+      id: Date.now(),
       title: values.title,
       location: values.location,
-      date: values.date,
+      startDate: values.startDate,
+      endDate: values.endDate,
       startTime: values.startTime,
       endTime: values.endTime,
       imageUrl: values.imageUrl,

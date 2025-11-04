@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 export const useEventFormLogic = ({ event }) => {
   const [title, setTitle] = useState("");
   const [location, setLocation] = useState("");
-  const [date, setDate] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -14,7 +15,8 @@ export const useEventFormLogic = ({ event }) => {
     if (event) {
       setTitle(event.title || "");
       setLocation(event.location || "");
-      setDate(event.date || "");
+      setStartDate(event.startDate || "");
+      setEndDate(event.endDate || "");
       setStartTime(event.startTime || "");
       setEndTime(event.endTime || "");
       setImageUrl(event.imageUrl || "");
@@ -26,7 +28,8 @@ export const useEventFormLogic = ({ event }) => {
   const hasChanges = () =>
     title.trim() !== event?.title ||
     location.trim() !== event?.location ||
-    date !== event?.date ||
+    startDate !== event?.startDate ||
+    endDate !== event?.endDate ||
     startTime !== event?.startTime ||
     endTime !== event?.endTime ||
     imageUrl.trim() !== event?.imageUrl ||
@@ -36,7 +39,8 @@ export const useEventFormLogic = ({ event }) => {
   const isValid = () =>
     title.trim() &&
     location.trim() &&
-    date &&
+    startDate &&
+    endDate &&
     startTime &&
     endTime &&
     imageUrl.trim() &&
@@ -46,7 +50,8 @@ export const useEventFormLogic = ({ event }) => {
   const resetForm = () => {
     setTitle("");
     setLocation("");
-    setDate("");
+    setStartDate("");
+    setEndDate("");
     setStartTime("");
     setEndTime("");
     setImageUrl("");
@@ -57,7 +62,8 @@ export const useEventFormLogic = ({ event }) => {
   const values = {
     title,
     location,
-    date,
+    startDate,
+    endDate,
     startTime,
     endTime,
     imageUrl,
@@ -68,7 +74,8 @@ export const useEventFormLogic = ({ event }) => {
   const setters = {
     setTitle,
     setLocation,
-    setDate,
+    setStartDate,
+    setEndDate,
     setStartTime,
     setEndTime,
     setImageUrl,

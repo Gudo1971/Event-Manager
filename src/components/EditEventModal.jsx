@@ -9,6 +9,7 @@ import {
   useDisclosure,
   useToast,
   useColorModeValue,
+  Image,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useEvents } from "../context/EventsContext";
@@ -72,14 +73,21 @@ export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
       return;
     }
 
-    const selectedDate = new Date(values.date);
+    const start = new Date(values.startDate);
+    const end = new Date(values.endDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    if (isNaN(selectedDate.getTime()) || selectedDate < today) {
+    if (
+      isNaN(start.getTime()) ||
+      isNaN(end.getTime()) ||
+      start < today ||
+      end < start
+    ) {
       toast({
-        title: "Invalid date",
-        description: "Please select a valid future date.",
+        title: "Invalid dates",
+        description:
+          "Please select valid future dates. End date must be after start date.",
         status: "error",
         position: "top-right",
         duration: 4000,
@@ -91,7 +99,8 @@ export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
     const updatedEvent = {
       title: values.title,
       location: values.location,
-      date: values.date,
+      startDate: values.startDate,
+      endDate: values.endDate,
       startTime: values.startTime,
       endTime: values.endTime,
       imageUrl: values.imageUrl,
@@ -143,6 +152,17 @@ export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
         <ModalContent bg={modalBg} px={{ base: 4, md: 6 }} py={4}>
           <ModalHeader>Edit Event</ModalHeader>
           <ModalBody>
+            {values.imageUrl && (
+              <Image
+                src={values.imageUrl}
+                alt={values.title}
+                borderRadius="md"
+                maxH="200px"
+                objectFit="cover"
+                mb={4}
+                fallbackSrc="/fallback.jpg"
+              />
+            )}
             <EventForm
               values={values}
               setters={setters}
