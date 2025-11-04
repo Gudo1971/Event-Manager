@@ -40,6 +40,7 @@ export const AddEventDialog = ({ isOpen, onClose }) => {
     resetCategoryForm,
   } = useAddCategoryLogic({
     onClose: onCatClose,
+    existingCategories: categories,
     onCategoryAdded: (newCat) => {
       setters.setCategoryId(newCat.id.toString());
       refetchCategories();

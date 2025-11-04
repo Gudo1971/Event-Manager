@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useToast } from "@chakra-ui/react";
 
-export const useAddCategoryLogic = ({ onClose, onCategoryAdded }) => {
+export const useAddCategoryLogic = ({
+  onClose,
+  onCategoryAdded,
+  existingCategories = [],
+}) => {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [categoryError, setCategoryError] = useState("");
   const toast = useToast();
@@ -11,21 +15,22 @@ export const useAddCategoryLogic = ({ onClose, onCategoryAdded }) => {
     setCategoryError("");
   };
 
-  const cancelCategoryForm = () => {
-    resetCategoryForm();
-    toast({
-      title: "Nothing saved",
-      description: "Your changes were discarded.",
-      status: "info",
-      position: "top-right",
-      duration: 3000,
-      isClosable: true,
-    });
-  };
-
   const handleAddCategory = async () => {
-    if (!newCategoryName.trim()) {
+    const trimmed = newCategoryName.trim().toLowerCase();
+
+    if (!trimmed) {
       setCategoryError("Category name is required.");
+      return;
+    }
+
+    const fuzzyMatch = existingCategories.some(
+      (cat) =>
+        cat.name.toLowerCase().includes(trimmed) ||
+        trimmed.includes(cat.name.toLowerCase())
+    );
+
+    if (fuzzyMatch) {
+      setCategoryError("A similar category already exists.");
       return;
     }
 
@@ -69,6 +74,5 @@ export const useAddCategoryLogic = ({ onClose, onCategoryAdded }) => {
     categoryError,
     handleAddCategory,
     resetCategoryForm,
-    cancelCategoryForm, // ✅ nieuw
   };
 };

@@ -38,6 +38,7 @@ export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
     resetCategoryForm,
   } = useAddCategoryLogic({
     onClose: onCatClose,
+    existingCategories: categories,
     onCategoryAdded: (newCat) => {
       setters.setCategoryId(newCat.id.toString());
       refetchCategories();
@@ -168,7 +169,7 @@ export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
         categoryError={categoryError}
         handleAddCategory={handleAddCategory}
         resetCategoryForm={resetCategoryForm}
-        hasChanges={() => !!newCategoryName.trim()} // ✅ lokale check
+        hasChanges={() => !!newCategoryName.trim()}
       />
     </>
   );
