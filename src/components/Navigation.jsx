@@ -14,9 +14,9 @@ export const Navigation = () => {
   const linkStyle = ({ isActive }) => ({
     fontWeight: isActive ? "bold" : "normal",
     color: isActive ? "#3182ce" : "inherit",
-    textAlign: "left",
-    width: "100%",
     justifyContent: "flex-start",
+    width: "100%",
+    textAlign: "left",
   });
 
   return (
@@ -29,7 +29,10 @@ export const Navigation = () => {
             as={NavLink}
             to={item.path}
             variant="ghost"
-            sx={linkStyle}
+            style={linkStyle}
+            width="100%"
+            justifyContent="flex-start"
+            textAlign="left"
           >
             {item.label}
           </Button>

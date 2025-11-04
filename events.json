@@ -110,35 +110,18 @@
       "endTime": "2023-03-19T21:00:00.000Z"
     },
     {
-      "title": "",
-      "startTime": "",
-      "imageUrl": "",
-      "category": "",
-      "id": 1761722293862
-    },
-    {
       "title": "s\\z",
-      "startTime": "",
+      "startTime": "12:12",
       "imageUrl": "\\zdfvb",
       "category": "z\\b",
       "categoryIds": [
-        "z\\b"
+        33
       ],
-      "id": 1761722293870
-    },
-    {
-      "title": "geg",
-      "description": "dsba\\",
-      "location": "adbfd",
-      "date": "",
-      "startTime": "",
-      "endTime": "",
-      "imageUrl": "",
-      "category": "1",
-      "categoryIds": [
-        "1"
-      ],
-      "id": 1761722293871
+      "id": 1761722293870,
+      "location": "fgnfgn",
+      "date": "2025-11-09",
+      "endTime": "13:12",
+      "description": "fgndfdn"
     },
     {
       "title": "",
@@ -169,27 +152,15 @@
     {
       "title": "yfuurf",
       "location": "rfyurfuy",
-      "startTime": "",
-      "endTime": "fbdzbz",
-      "imageUrl": "",
+      "startTime": "04:56",
+      "endTime": "15:20",
+      "imageUrl": "etq",
       "description": "rfuykrfykrfyk,lyfryfuk",
       "categoryIds": [
         1
       ],
-      "id": 1761722293875
-    },
-    {
-      "title": "sfghfnfggjndfhdfh",
-      "location": "dfzfhgaz",
-      "date": "2025-09-30",
-      "startTime": "",
-      "endTime": "",
-      "imageUrl": "",
-      "description": "dfbgdhbdhbfdhfbd",
-      "categoryIds": [
-        15
-      ],
-      "id": 1761722293876
+      "id": 1761722293875,
+      "date": "2025-11-17"
     },
     {
       "title": "lgl;ui;",
@@ -342,17 +313,69 @@
       "id": 1761722293890
     },
     {
-      "title": "fbdbfgnfxsnjgsznmszfjmsxztr",
-      "location": "bfdb",
-      "date": "2025-11-11",
-      "startTime": "15:46",
-      "endTime": "11:50",
-      "imageUrl": "dfbd",
-      "description": "dfbd",
+      "title": "bsdfbfd",
+      "location": "bzdnf",
+      "date": "2025-11-04",
+      "startTime": "17:51",
+      "endTime": "19:51",
+      "imageUrl": "fdbfnb",
+      "description": "dfnbdfn",
+      "categoryIds": [
+        29
+      ],
+      "id": 1761722293891
+    },
+    {
+      "title": "cvn",
+      "location": "cn",
+      "date": "2025-11-18",
+      "startTime": "19:01",
+      "endTime": "14:07",
+      "imageUrl": "fgnf",
+      "description": "fgnf",
+      "categoryIds": [
+        30
+      ],
+      "id": 1761722293892
+    },
+    {
+      "title": "sdgs",
+      "location": "dsgfbsd",
+      "date": "2025-11-10",
+      "startTime": "16:06",
+      "endTime": "18:06",
+      "imageUrl": "dfnd",
+      "description": "dfnb",
+      "categoryIds": [
+        31
+      ],
+      "id": 1761722293893
+    },
+    {
+      "title": "cbxcb",
+      "location": "xcbx",
+      "date": "2025-11-13",
+      "startTime": "14:17",
+      "endTime": "14:20",
+      "imageUrl": "xcb x",
+      "description": "xbx",
+      "categoryIds": [
+        32
+      ],
+      "id": 1761722293894
+    },
+    {
+      "title": "fdhbzd",
+      "location": "dbnfznb",
+      "date": "2025-11-19",
+      "startTime": "14:20",
+      "endTime": "18:18",
+      "imageUrl": "dfdf",
+      "description": "dfnbd",
       "categoryIds": [
         18
       ],
-      "id": 1761722293891
+      "id": 1761722293895
     }
   ],
   "categories": [
@@ -455,6 +478,54 @@
     {
       "name": "sbgb",
       "id": 25
+    },
+    {
+      "name": "hmgch",
+      "id": 26
+    },
+    {
+      "name": "uyktyuktfyukt",
+      "id": 27
+    },
+    {
+      "name": "nfgnf",
+      "id": 28
+    },
+    {
+      "name": "dfndfn",
+      "id": 29
+    },
+    {
+      "name": ";io';io';i",
+      "id": 30
+    },
+    {
+      "name": "tyu65tr",
+      "id": 31
+    },
+    {
+      "name": "xb x",
+      "id": 32
+    },
+    {
+      "name": "fgnfdngdfgn",
+      "id": 33
+    },
+    {
+      "name": "trh",
+      "id": 34
+    },
+    {
+      "name": "tre",
+      "id": 35
+    },
+    {
+      "name": "gujkl",
+      "id": 36
+    },
+    {
+      "name": "dddef",
+      "id": 37
     }
   ]
 }

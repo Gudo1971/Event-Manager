@@ -1,16 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDisclosure, useToast } from "@chakra-ui/react";
 import { useEvents } from "../context/EventsContext";
-import { ensureCategoryExists } from "../utils/ensureCategoryExists";
 
-export const useAddEventLogic = ({ onClose }) => {
-  const { refetchEvents, categories } = useEvents();
+export const useAddEventLogic = ({ isOpen, onClose }) => {
+  const { categories, refetchEvents, refetchCategories } = useEvents();
   const toast = useToast();
 
   const {
     isOpen: isCatOpen,
     onOpen: onCatOpen,
-    onClose: onCatClose,
+    onClose: rawCatClose,
   } = useDisclosure();
 
   const [title, setTitle] = useState("");
@@ -21,20 +20,25 @@ export const useAddEventLogic = ({ onClose }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [description, setDescription] = useState("");
   const [categoryId, setCategoryId] = useState("");
-  const [newCategoryName, setNewCategoryName] = useState("");
-  const [categoryError, setCategoryError] = useState("");
 
-  const resetForm = () => {
-    setTitle("");
-    setLocation("");
-    setDate("");
-    setStartTime("");
-    setEndTime("");
-    setImageUrl("");
-    setDescription("");
-    setCategoryId("");
-    setNewCategoryName("");
-    setCategoryError("");
+  // Reset velden bij sluiten
+  useEffect(() => {
+    if (!isOpen) {
+      setTitle("");
+      setLocation("");
+      setDate("");
+      setStartTime("");
+      setEndTime("");
+      setImageUrl("");
+      setDescription("");
+      setCategoryId("");
+    }
+  }, [isOpen]);
+
+  // Sluit categorie-modal en refresh lijst
+  const handleCategoryModalClose = async () => {
+    rawCatClose();
+    await refetchCategories();
   };
 
   const handleSubmit = async () => {
@@ -46,7 +50,7 @@ export const useAddEventLogic = ({ onClose }) => {
       !endTime ||
       !imageUrl ||
       !description ||
-      (!categoryId && !newCategoryName)
+      !categoryId
     ) {
       toast({
         title: "Missing fields",
@@ -59,46 +63,41 @@ export const useAddEventLogic = ({ onClose }) => {
       return;
     }
 
+    const newEvent = {
+      title,
+      location,
+      date,
+      startTime,
+      endTime,
+      imageUrl,
+      description,
+      categoryIds: [Number(categoryId)],
+    };
+
     try {
-      const finalCategoryId = categoryId
-        ? Number(categoryId)
-        : await ensureCategoryExists(newCategoryName);
-
-      const newEvent = {
-        title,
-        location,
-        date,
-        startTime,
-        endTime,
-        imageUrl,
-        description,
-        categoryIds: [finalCategoryId],
-      };
-
       const res = await fetch("http://localhost:3000/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newEvent),
       });
 
-      if (!res.ok) throw new Error("Failed to create event");
+      if (!res.ok) throw new Error("Server error");
 
       toast({
         title: "Event created",
         description: `"${title}" has been added.`,
         status: "success",
         position: "top-right",
-        duration: 4000,
+        duration: 3000,
         isClosable: true,
       });
 
-      await refetchEvents();
-      resetForm();
       onClose();
+      await refetchEvents();
     } catch (err) {
       toast({
         title: "Creation failed",
-        description: err.message || "Could not create the event.",
+        description: err.message,
         status: "error",
         position: "top-right",
         duration: 4000,
@@ -124,15 +123,10 @@ export const useAddEventLogic = ({ onClose }) => {
     setDescription,
     categoryId,
     setCategoryId,
-    newCategoryName,
-    setNewCategoryName,
-    categoryError,
-    setCategoryError,
     isCatOpen,
     onCatOpen,
-    onCatClose,
+    onCatClose: handleCategoryModalClose,
     categories,
     handleSubmit,
-    resetForm,
   };
 };

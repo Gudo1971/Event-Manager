@@ -15,6 +15,7 @@ import {
   AlertDialogFooter,
   useDisclosure,
   useToast,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { useRef } from "react";
 import { useEvents } from "../context/EventsContext";
@@ -30,7 +31,7 @@ export const DeleteEventModal = ({ isOpen, onClose, event }) => {
 
   const navigate = useNavigate();
   const cancelRef = useRef();
-  const toast = useToast(); // ✅ officiële Chakra toast
+  const toast = useToast();
 
   const handleDelete = async () => {
     try {
@@ -67,20 +68,25 @@ export const DeleteEventModal = ({ isOpen, onClose, event }) => {
 
   if (!event) return null;
 
+  const modalBg = useColorModeValue("white", "gray.800");
+  const textColor = useColorModeValue("gray.800", "gray.100");
+
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered size="md">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent bg={modalBg} px={{ base: 4, md: 6 }} py={4}>
           <ModalHeader>Delete Event</ModalHeader>
           <ModalBody>
-            <Text>Are you sure you want to delete "{event.title}"?</Text>
+            <Text color={textColor}>
+              Are you sure you want to delete <strong>"{event.title}"</strong>?
+            </Text>
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter justifyContent="flex-end" gap={3}>
             <Button colorScheme="red" onClick={onConfirmOpen}>
               Delete
             </Button>
-            <Button onClick={onClose} ml={3}>
+            <Button onClick={onClose} variant="ghost">
               Cancel
             </Button>
           </ModalFooter>
@@ -91,22 +97,24 @@ export const DeleteEventModal = ({ isOpen, onClose, event }) => {
         isOpen={isConfirmOpen}
         leastDestructiveRef={cancelRef}
         onClose={onConfirmClose}
+        isCentered
       >
         <AlertDialogOverlay />
-        <AlertDialogContent>
+        <AlertDialogContent bg={modalBg} px={{ base: 4, md: 6 }} py={4}>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
             Confirm Deletion
           </AlertDialogHeader>
 
-          <AlertDialogBody>
-            This action will permanently delete "{event.title}". Are you sure?
+          <AlertDialogBody color={textColor}>
+            This action will permanently delete <strong>"{event.title}"</strong>
+            . Are you sure?
           </AlertDialogBody>
 
-          <AlertDialogFooter>
+          <AlertDialogFooter justifyContent="flex-end" gap={3}>
             <Button ref={cancelRef} onClick={onConfirmClose}>
               No, cancel
             </Button>
-            <Button colorScheme="red" onClick={handleDelete} ml={3}>
+            <Button colorScheme="red" onClick={handleDelete}>
               Yes, delete
             </Button>
           </AlertDialogFooter>

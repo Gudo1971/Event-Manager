@@ -1,4 +1,13 @@
-import { VStack, HStack, Icon, Text, Image, Tag, Wrap } from "@chakra-ui/react";
+import {
+  VStack,
+  HStack,
+  Icon,
+  Text,
+  Image,
+  Tag,
+  Wrap,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import { CalendarIcon, TimeIcon } from "@chakra-ui/icons";
 import { MdLocationOn } from "react-icons/md";
 
@@ -30,32 +39,43 @@ export const EventDetail = ({ event, categories }) => {
         year: "numeric",
       });
 
+  const labelColor = useColorModeValue("gray.600", "gray.400");
+  const textColor = useColorModeValue("gray.800", "gray.100");
+
   return (
-    <VStack align="start" spacing={4}>
-      <Text fontSize="2xl" fontWeight="bold">
+    <VStack
+      align="start"
+      spacing={{ base: 4, md: 6 }}
+      px={{ base: 4, md: 0 }}
+      py={{ base: 4, md: 6 }}
+      maxW="700px"
+      mx="auto"
+      color={textColor}
+    >
+      <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="bold">
         {event.title}
       </Text>
 
-      <Text>{event.description}</Text>
+      <Text fontSize={{ base: "sm", md: "md" }}>{event.description}</Text>
 
-      <HStack>
-        <Icon as={MdLocationOn} color="gray.500" />
-        <Text>{event.location}</Text>
+      <HStack spacing={2}>
+        <Icon as={MdLocationOn} color={labelColor} />
+        <Text fontSize="sm">{event.location}</Text>
       </HStack>
 
-      <HStack>
-        <CalendarIcon color="gray.500" />
-        <Text>{formattedDate}</Text>
+      <HStack spacing={2}>
+        <CalendarIcon color={labelColor} />
+        <Text fontSize="sm">{formattedDate}</Text>
       </HStack>
 
-      <HStack>
-        <TimeIcon color="gray.500" />
-        <Text>Start: {event.startTime}</Text>
+      <HStack spacing={2}>
+        <TimeIcon color={labelColor} />
+        <Text fontSize="sm">Start: {event.startTime}</Text>
       </HStack>
 
-      <HStack>
-        <TimeIcon color="gray.500" />
-        <Text>Einde: {event.endTime}</Text>
+      <HStack spacing={2}>
+        <TimeIcon color={labelColor} />
+        <Text fontSize="sm">Einde: {event.endTime}</Text>
       </HStack>
 
       {event.image && (
@@ -65,12 +85,13 @@ export const EventDetail = ({ event, categories }) => {
           borderRadius="md"
           objectFit="cover"
           width="100%"
-          maxH="300px"
+          maxH={{ base: "200px", md: "300px" }}
+          mt={2}
         />
       )}
 
       {matchedCategories.length > 0 && (
-        <Wrap>
+        <Wrap spacing={2} mt={2}>
           {matchedCategories.map((cat) => {
             const color = colorSchemes[cat.id % colorSchemes.length];
             return (
