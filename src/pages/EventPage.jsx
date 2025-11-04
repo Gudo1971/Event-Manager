@@ -60,8 +60,8 @@ export const EventPage = () => {
     fetchData();
   }, [eventId]);
 
-  const handleSave = (updateEvent) => {
-    setEvent(updateEvent);
+  const handleSave = (updatedEvent) => {
+    setEvent(updatedEvent);
     onEditClose();
   };
 
@@ -161,18 +161,23 @@ export const EventPage = () => {
         </CardFooter>
       </Card>
 
-      <EditEventModal
-        isOpen={isEditOpen}
-        onClose={onEditClose}
-        event={event}
-        onSave={handleSave}
-      />
-      <DeleteEventModal
-        isOpen={isDeleteOpen}
-        onClose={onDeleteClose}
-        event={event}
-        onDelete={handleDelete}
-      />
+      {/* ✅ Modals renderen pas als event bestaat */}
+      {event && (
+        <>
+          <EditEventModal
+            isOpen={isEditOpen}
+            onClose={onEditClose}
+            event={event}
+            onSave={handleSave}
+          />
+          <DeleteEventModal
+            isOpen={isDeleteOpen}
+            onClose={onDeleteClose}
+            event={event}
+            onDelete={handleDelete}
+          />
+        </>
+      )}
     </Box>
   );
 };

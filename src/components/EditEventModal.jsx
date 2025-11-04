@@ -18,7 +18,7 @@ import { EventForm } from "./EventForm";
 import { CategoryModal } from "./CategoryModal";
 import { InfoModal } from "./InfoModal";
 
-export const EditEventModal = ({ isOpen, onClose, event }) => {
+export const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
   const { refetchEvents, categories, refetchCategories } = useEvents();
   const toast = useToast();
   const navigate = useNavigate();
@@ -124,7 +124,7 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
       });
 
       await refetchEvents();
-      onClose();
+      onSave?.(updatedEvent);
       navigate("/");
     } catch (err) {
       toast({
@@ -139,6 +139,8 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
   };
 
   const modalBg = useColorModeValue("white", "gray.800");
+
+  if (!event) return null;
 
   return (
     <>
@@ -174,6 +176,7 @@ export const EditEventModal = ({ isOpen, onClose, event }) => {
         categoryError={categoryError}
         handleAddCategory={handleAddCategory}
         resetCategoryForm={resetCategoryForm}
+        hasChanges={() => !!newCategoryName.trim()} // ✅ lokale check
       />
 
       <InfoModal isOpen={isInfoOpen} onClose={closeInfoModal} />

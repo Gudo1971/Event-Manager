@@ -12,6 +12,7 @@ import {
   FormErrorMessage,
   useToast,
 } from "@chakra-ui/react";
+import { useEffect } from "react";
 
 export const CategoryModal = ({
   isOpen,
@@ -22,11 +23,16 @@ export const CategoryModal = ({
   handleAddCategory,
   resetCategoryForm,
   hasChanges,
+  isEdit,
 }) => {
   const toast = useToast();
 
+  useEffect(() => {
+    if (isOpen) resetCategoryForm();
+  }, [isOpen]);
+
   const handleCancel = () => {
-    if (hasChanges()) {
+    if (hasChanges?.()) {
       toast({
         title: "Nothing saved",
         description: "Your changes were discarded.",
@@ -41,10 +47,10 @@ export const CategoryModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleCancel} isCentered size="md">
+    <Modal isOpen={isOpen} onClose={onClose} isCentered size="md">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Add Category</ModalHeader>
+        <ModalHeader>{isEdit ? "Edit Category" : "Add Category"}</ModalHeader>
         <ModalBody>
           <FormControl isInvalid={!!categoryError}>
             <FormLabel>Category name</FormLabel>

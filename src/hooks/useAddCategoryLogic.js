@@ -1,81 +1,65 @@
-import { useToast } from "@chakra-ui/react";
-import { useEvents } from "../context/EventsContext";
 import { useState } from "react";
+import { useToast } from "@chakra-ui/react";
 
 export const useAddCategoryLogic = ({ onClose, onCategoryAdded }) => {
-  const { categories, refetchCategories } = useEvents();
-  const toast = useToast();
-
   const [newCategoryName, setNewCategoryName] = useState("");
   const [categoryError, setCategoryError] = useState("");
+  const toast = useToast();
 
   const resetCategoryForm = () => {
     setNewCategoryName("");
     setCategoryError("");
   };
 
-  const handleAddCategory = async () => {
-    const name = newCategoryName.trim();
-    if (!name) {
-      setCategoryError("Name is required.");
-      return false;
-    }
-
-    const lower = name.toLowerCase();
-
-    const fuzzyMatch = categories?.find((c) => {
-      const existing = c.name.toLowerCase();
-      return existing.includes(lower) || lower.includes(existing);
+  const cancelCategoryForm = () => {
+    resetCategoryForm();
+    toast({
+      title: "Nothing saved",
+      description: "Your changes were discarded.",
+      status: "info",
+      position: "top-right",
+      duration: 3000,
+      isClosable: true,
     });
+  };
 
-    if (fuzzyMatch) {
-      setCategoryError(`Did you mean "${fuzzyMatch.name}"?`);
-      toast({
-        title: "Did you mean…?",
-        description: `"${fuzzyMatch.name}" looks similar to "${name}".`,
-        status: "warning",
-        position: "top-right",
-        duration: 3000,
-        isClosable: true,
-      });
-      return false;
+  const handleAddCategory = async () => {
+    if (!newCategoryName.trim()) {
+      setCategoryError("Category name is required.");
+      return;
     }
 
     try {
       const res = await fetch("http://localhost:3000/categories", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name: newCategoryName }),
       });
 
-      if (!res.ok) throw new Error("Failed to create category");
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
 
-      const data = await res.json();
+      const newCat = await res.json();
 
       toast({
-        title: "Category created",
-        description: `"${data.name}" has been added.`,
+        title: "Category added",
+        description: `"${newCat.name}" has been created.`,
         status: "success",
         position: "top-right",
         duration: 3000,
         isClosable: true,
       });
 
-      onCategoryAdded?.(data);
-      resetCategoryForm();
-      await refetchCategories();
-      onClose?.();
-      return true;
+      onCategoryAdded?.(newCat);
+      onClose();
     } catch (err) {
       toast({
-        title: "Error",
-        description: err.message || "Could not create category.",
+        title: "Failed to add category",
+        description: err.message || "Something went wrong.",
         status: "error",
         position: "top-right",
-        duration: 3000,
+        duration: 4000,
         isClosable: true,
       });
-      return false;
     }
   };
 
@@ -85,5 +69,6 @@ export const useAddCategoryLogic = ({ onClose, onCategoryAdded }) => {
     categoryError,
     handleAddCategory,
     resetCategoryForm,
+    cancelCategoryForm, // ✅ nieuw
   };
 };

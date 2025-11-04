@@ -26,6 +26,7 @@ import { useBreakpointValue } from "@chakra-ui/react";
 export const Root = () => {
   const location = useLocation();
   useSystemColorSync();
+
   const showAside =
     location.pathname === "/" || location.pathname === "/events";
 
@@ -47,6 +48,7 @@ export const Root = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
 
+  // ✅ verplaatst naar boven voor stabiele hook-volgorde
   const bg = useColorModeValue("gray.50", "gray.900");
   const sectionLabelColor = useColorModeValue("gray.500", "gray.400");
 
@@ -151,7 +153,6 @@ export const Root = () => {
           bg={bg}
           p={6}
           borderRight="1px solid"
-          borderColor={useColorModeValue("gray.200", "gray.700")}
           position="sticky"
           top="0"
           h="100vh"
