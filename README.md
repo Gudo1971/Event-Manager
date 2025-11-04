@@ -41,7 +41,7 @@ Skill Sessions is a responsive event management platform built with React, Chakr
 ## Installation
 
 1. Clone the repository  
-   `git clone https://github.com/Gutoxim/skill-sessions.git`
+   `git clone https://github.com/Gudo1971/Event-Manager.git`
 
 2. Install dependencies  
    `npm install`
